@@ -1,6 +1,18 @@
 import {defs, tiny} from './examples/common.js';
 
-const {
+export class Drone extends Shape {
+    constructor(props) {
+        super(props);
+
+        this.shapes = {
+            head: new defs.Subdivided_Sphere(4),
+            leg: new Cube(),
+
+        }
+    }
+
+}
+/*const {
     Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene,
 } = tiny;
 
@@ -262,4 +274,4 @@ class Ring_Shader extends Shader {
         }`;
     }
 }
-
+*/
