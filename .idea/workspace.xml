@@ -4,7 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7b88f1da-30ac-4a90-ae8d-cbd0325b7c61" name="Changes" comment="barebones of Drone class and declaration of main scene class" />
+    <list default="true" id="7b88f1da-30ac-4a90-ae8d-cbd0325b7c61" name="Changes" comment="barebones of Drone class and declaration of main scene class">
+      <change afterPath="$PROJECT_DIR$/project/examples/assets/moonAndEarth.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/project/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project/main-scene.js" beforeDir="false" afterPath="$PROJECT_DIR$/project/main-scene.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project/oceans14.js" beforeDir="false" afterPath="$PROJECT_DIR$/project/oceans14.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -30,7 +36,8 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;basic-scene&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/cassiesmacbookpro/Oceans14&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -52,6 +59,8 @@
       <workItem from="1684029023301" duration="438000" />
       <workItem from="1684029649842" duration="216000" />
       <workItem from="1684029890912" duration="639000" />
+      <workItem from="1684120893241" duration="1884000" />
+      <workItem from="1684193100574" duration="6379000" />
     </task>
     <task id="LOCAL-00001" summary="barebones of Drone class and declaration of main scene class">
       <created>1684030090906</created>

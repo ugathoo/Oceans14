@@ -1,5 +1,11 @@
 import {defs, tiny} from './examples/common.js';
 
+const {
+    Vector, Vector3, vec, vec3, vec4, color, hex_color, Matrix, Mat4, Light, Shape, Material, Scene, Shader, Texture
+} = tiny;
+
+const {Cube, Axis_Arrows, Textured_Phong} = defs
+
 export class Drone extends Shape {
     constructor(props) {
         super(props);
@@ -10,83 +16,195 @@ export class Drone extends Shape {
 
         }
     }
+}
+
+class Line extends Shape {
+    constructor() {
+        super("position", "color");
+        this.arrays.position = Vector3.cast(
+            [-12, 0, 0], [12, 0, 0]
+        );
+        this.arrays.color = [
+            vec4(0, 1, 0, 1), vec4(0, 1, 0, 1)
+        ];
+        this.indices = true; // not necessary
+    }
+}
+
+class Path extends Shape {
 
 }
-/*const {
-    Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene,
-} = tiny;
 
-export class Assignment3 extends Scene {
+
+export class Oceans14 extends Scene {
     constructor() {
         // constructor(): Scenes begin by populating initial values like the Shapes and Materials they'll need.
         super();
-
         // At the beginning of our program, load one of each of these shape definitions onto the GPU.
         this.shapes = {
             torus: new defs.Torus(15, 15),
             torus2: new defs.Torus(3, 15),
             sphere: new defs.Subdivision_Sphere(4),
             circle: new defs.Regular_2D_Polygon(1, 15),
-            // TODO:  Fill in as many additional shape instances as needed in this key/value table.
-            //        (Requirement 1)
+            line: new Line(),
+            square: new defs.Square(),
         };
 
         // *** Materials
         this.materials = {
             test: new Material(new defs.Phong_Shader(),
                 {ambient: .4, diffusivity: .6, color: hex_color("#ffffff")}),
-            test2: new Material(new Gouraud_Shader(),
-                {ambient: .4, diffusivity: .6, color: hex_color("#992828")}),
-            ring: new Material(new Ring_Shader()),
-            // TODO:  Fill in as many additional material objects as needed in this key/value table.
-            //        (Requirement 4)
+            laser: new Material(new defs.Basic_Shader(),
+                {ambient: 1, diffusivity: 1}), // ambient set to max to make laser nice and bright
+            texture: new Material(new Textured_Phong(), {
+                color: hex_color("#000000"),
+                ambient: 1.0, diffusivity: 0.1, specularity: 0.1,
+                texture: new Texture("examples/assets/moonAndEarth.png", "NEAREST")
+            }),
         }
-
+        // rotated camera to see between lasers better
         this.initial_camera_location = Mat4.look_at(vec3(0, 10, 20), vec3(0, 0, 0), vec3(0, 1, 0));
-    }
+        this.initial_camera_location = this.initial_camera_location.times(Mat4.rotation(-1*Math.PI/12, 1, 0, 0));
 
-    make_control_panel() {
-        // Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
-        this.key_triggered_button("View solar system", ["Control", "0"], () => this.attached = () => null);
-        this.new_line();
-        this.key_triggered_button("Attach to planet 1", ["Control", "1"], () => this.attached = () => this.planet_1);
-        this.key_triggered_button("Attach to planet 2", ["Control", "2"], () => this.attached = () => this.planet_2);
-        this.new_line();
-        this.key_triggered_button("Attach to planet 3", ["Control", "3"], () => this.attached = () => this.planet_3);
-        this.key_triggered_button("Attach to planet 4", ["Control", "4"], () => this.attached = () => this.planet_4);
-        this.new_line();
-        this.key_triggered_button("Attach to moon", ["Control", "m"], () => this.attached = () => this.moon);
+
+
+        this.game_started = true;
+        // create initial array of lasers, with a random value for y-value and tilt
+        // inside display, number of them that get rendered will have to do with time!
+
+        // once all the lasers in the initial array get used up, start adding more
+        // delete lasers from array once they have reached the end?
+
+
+
+    }
+    //
+     make_control_panel() {
+    //     // Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
+     //    this.key_triggered_button("Start Game", ["r"], () => this.attached = () => null);
+    //     this.new_line();
+    //     this.key_triggered_button("Attach to planet 1", ["Control", "1"], () => this.attached = () => this.planet_1);
+    //     this.key_triggered_button("Attach to planet 2", ["Control", "2"], () => this.attached = () => this.planet_2);
+    //     this.new_line();
+    //     this.key_triggered_button("Attach to planet 3", ["Control", "3"], () => this.attached = () => this.planet_3);
+    //     this.key_triggered_button("Attach to planet 4", ["Control", "4"], () => this.attached = () => this.planet_4);
+    //     this.new_line();
+    //     this.key_triggered_button("Attach to moon", ["Control", "m"], () => this.attached = () => this.moon);
+         this.key_triggered_button("Start Game", ["r"], () => {
+             if (this.game_started === false)
+                 this.game_started = true;
+         });
+     }
+
+    display_lasers(t) {
+
     }
 
     display(context, program_state) {
         // display():  Called once per frame of animation.
         // Setup -- This part sets up the scene's overall camera matrix, projection matrix, and lights:
-        if (!context.scratchpad.controls) {
-            this.children.push(context.scratchpad.controls = new defs.Movement_Controls());
-            // Define the global camera and projection matrices, which are stored in program_state.
-            program_state.set_camera(this.initial_camera_location);
+        if (this.game_started === false)
+        {
+            // Home screen
+            if (!context.scratchpad.controls) {
+                this.children.push(context.scratchpad.controls = new defs.Movement_Controls());
+                // Define the global camera and projection matrices, which are stored in program_state.
+                program_state.set_camera(this.initial_camera_location);
+            }
+
+            program_state.projection_transform = Mat4.perspective(
+                Math.PI / 4, context.width / context.height, .1, 1000);
+
+            // TODO: Lighting (Requirement 2)
+            const light_position = vec4(0, 5, 5, 1);
+            // The parameters of the Light are: position, color, size
+            program_state.lights = [new Light(light_position, color(1, 1, 1, 1), 1000)];
+
+
+
+
+
+        }
+        else
+        {
+            // Game running
+
+            //lasers
+
+            if (!context.scratchpad.controls) {
+                this.children.push(context.scratchpad.controls = new defs.Movement_Controls());
+                // Define the global camera and projection matrices, which are stored in program_state.
+                program_state.set_camera(this.initial_camera_location);
+            }
+
+            program_state.projection_transform = Mat4.perspective(
+                Math.PI / 4, context.width / context.height, .1, 1000);
+
+            // TODO: Lighting (Requirement 2)
+            const light_position = vec4(0, 5, 5, 1);
+            // The parameters of the Light are: position, color, size
+            program_state.lights = [new Light(light_position, color(1, 1, 1, 1), 1000)];
+
+            const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
+            const t_seconds = program_state.animation_time;
+            const yellow = hex_color("#fac91a");
+            let model_transform = Mat4.identity();
+            let model_transform_background = Mat4.identity();
+            let model_transform_lasers = Mat4.identity();
+
+
+
+            // setup: location  along z-axis where laser gets generated
+            model_transform_lasers = model_transform_lasers.times(Mat4.translation(0, 0, -20));
+
+
+            // location of laser in terms of height
+            // should be a random y-value between -1 and 7
+            let random_amount = Math.random();
+            let linear_combo = (-1 * random_amount) + (7 * (1 - random_amount));
+            model_transform_lasers = model_transform_lasers.times(Mat4.translation(0, 4, 0));
+
+
+            // make laser move towards you
+            model_transform_lasers = model_transform_lasers.times(Mat4.translation(0, 0, 4 * t));
+
+            // tilt of laser
+            // should be a random value between -pi/8 and pi/8, with the more-than-occasional angle = 0
+            model_transform_lasers = model_transform_lasers.times(Mat4.rotation(-1 * Math.PI / 8, 0, 0, 1));
+
+            // draw new laser every 2 seconds
+
+            this.shapes.line.draw(context, program_state, model_transform_lasers, this.materials.laser, "LINES");
+
+
+            // draw a square as a "ground" for the game
+            // scaled to be 5x5 and moved down to -2 units below origin
+            // rotated so that its flat along "ground"
+            model_transform = model_transform.times(Mat4.translation(0, -2, 0));
+            model_transform = model_transform.times(Mat4.scale(10, 10, 10));
+            model_transform = model_transform.times(Mat4.rotation(Math.PI / 2, 1, 0, 0));
+            this.shapes.square.draw(context, program_state, model_transform, this.materials.test.override({color: yellow}));
+
+            // draw more squares next to it to create a path along the "ground"
+            model_transform = model_transform.times(Mat4.translation(0, -2, 0));
+            this.shapes.square.draw(context, program_state, model_transform, this.materials.test.override({color: yellow}));
+            model_transform = model_transform.times(Mat4.translation(0, -2, 0));
+            this.shapes.square.draw(context, program_state, model_transform, this.materials.test.override({color: yellow}));
+            model_transform = model_transform.times(Mat4.translation(0, -2, 0));
+            this.shapes.square.draw(context, program_state, model_transform, this.materials.test.override({color: yellow}));
+            model_transform = model_transform.times(Mat4.translation(0, -2, 0));
+            this.shapes.square.draw(context, program_state, model_transform, this.materials.test.override({color: yellow}));
+
+
+            // draw background
+            // model_transform_background = model_transform_background.times(Mat4.scale(300, 300, 1));
+            // model_transform_background = model_transform_background.times(Mat4.translation(0, 0, -900));
+            // this.shapes.square.draw(context, program_state, model_transform_background, this.materials.texture);
         }
 
-        program_state.projection_transform = Mat4.perspective(
-            Math.PI / 4, context.width / context.height, .1, 1000);
-
-        // TODO: Create Planets (Requirement 1)
-        // this.shapes.[XXX].draw([XXX]) // <--example
-
-        // TODO: Lighting (Requirement 2)
-        const light_position = vec4(0, 5, 5, 1);
-        // The parameters of the Light are: position, color, size
-        program_state.lights = [new Light(light_position, color(1, 1, 1, 1), 1000)];
-
-        // TODO:  Fill in matrix operations and drawing code to draw the solar system scene (Requirements 3 and 4)
-        const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
-        const yellow = hex_color("#fac91a");
-        let model_transform = Mat4.identity();
-
-        this.shapes.torus.draw(context, program_state, model_transform, this.materials.test.override({color: yellow}));
     }
 }
-
+/*
 class Gouraud_Shader extends Shader {
     // This is a Shader using Phong_Shader as template
     // TODO: Modify the glsl coder here to create a Gouraud Shader (Planet 2)
@@ -98,7 +216,7 @@ class Gouraud_Shader extends Shader {
 
     shared_glsl_code() {
         // ********* SHARED CODE, INCLUDED IN BOTH SHADERS *********
-        return ` 
+        return `
         precision mediump float;
         const int N_LIGHTS = ` + this.num_lights + `;
         uniform float ambient, diffusivity, specularity, smoothness;
@@ -111,20 +229,20 @@ class Gouraud_Shader extends Shader {
         // on to the next phase (fragment shader), then interpolated per-fragment, weighted by the
         // pixel fragment's proximity to each of the 3 vertices (barycentric interpolation).
         varying vec3 N, vertex_worldspace;
-        // ***** PHONG SHADING HAPPENS HERE: *****                                       
-        vec3 phong_model_lights( vec3 N, vec3 vertex_worldspace ){                                        
+        // ***** PHONG SHADING HAPPENS HERE: *****
+        vec3 phong_model_lights( vec3 N, vec3 vertex_worldspace ){
             // phong_model_lights():  Add up the lights' contributions.
             vec3 E = normalize( camera_center - vertex_worldspace );
             vec3 result = vec3( 0.0 );
             for(int i = 0; i < N_LIGHTS; i++){
-                // Lights store homogeneous coords - either a position or vector.  If w is 0, the 
-                // light will appear directional (uniform direction from all points), and we 
+                // Lights store homogeneous coords - either a position or vector.  If w is 0, the
+                // light will appear directional (uniform direction from all points), and we
                 // simply obtain a vector towards the light by directly using the stored value.
-                // Otherwise if w is 1 it will appear as a point light -- compute the vector to 
-                // the point light's location from the current surface point.  In either case, 
-                // fade (attenuate) the light as the vector needed to reach it gets longer.  
-                vec3 surface_to_light_vector = light_positions_or_vectors[i].xyz - 
-                                               light_positions_or_vectors[i].w * vertex_worldspace;                                             
+                // Otherwise if w is 1 it will appear as a point light -- compute the vector to
+                // the point light's location from the current surface point.  In either case,
+                // fade (attenuate) the light as the vector needed to reach it gets longer.
+                vec3 surface_to_light_vector = light_positions_or_vectors[i].xyz -
+                                               light_positions_or_vectors[i].w * vertex_worldspace;
                 float distance_to_light = length( surface_to_light_vector );
 
                 vec3 L = normalize( surface_to_light_vector );
@@ -134,7 +252,7 @@ class Gouraud_Shader extends Shader {
                 float diffuse  =      max( dot( N, L ), 0.0 );
                 float specular = pow( max( dot( N, H ), 0.0 ), smoothness );
                 float attenuation = 1.0 / (1.0 + light_attenuation_factors[i] * distance_to_light * distance_to_light );
-                
+
                 vec3 light_contribution = shape_color.xyz * light_colors[i].xyz * diffusivity * diffuse
                                                           + light_colors[i].xyz * specularity * specular;
                 result += attenuation * light_contribution;
@@ -146,13 +264,13 @@ class Gouraud_Shader extends Shader {
     vertex_glsl_code() {
         // ********* VERTEX SHADER *********
         return this.shared_glsl_code() + `
-            attribute vec3 position, normal;                            
+            attribute vec3 position, normal;
             // Position is expressed in object coordinates.
-            
+
             uniform mat4 model_transform;
             uniform mat4 projection_camera_model_transform;
-    
-            void main(){                                                                   
+
+            void main(){
                 // The vertex's final resting place (in NDCS):
                 gl_Position = projection_camera_model_transform * vec4( position, 1.0 );
                 // The final normal vector in screen space.
@@ -166,7 +284,7 @@ class Gouraud_Shader extends Shader {
         // A fragment is a pixel that's overlapped by the current triangle.
         // Fragments affect the final image or get discarded due to depth.
         return this.shared_glsl_code() + `
-            void main(){                                                           
+            void main(){
                 // Compute an initial (ambient) color:
                 gl_FragColor = vec4( shape_color.xyz * ambient, shape_color.w );
                 // Compute the final color with contributions from lights:
@@ -259,9 +377,9 @@ class Ring_Shader extends Shader {
         attribute vec3 position;
         uniform mat4 model_transform;
         uniform mat4 projection_camera_model_transform;
-        
+
         void main(){
-          
+
         }`;
     }
 
@@ -270,8 +388,9 @@ class Ring_Shader extends Shader {
         // TODO:  Complete the main function of the fragment shader (Extra Credit Part II).
         return this.shared_glsl_code() + `
         void main(){
-          
+
         }`;
     }
 }
 */
+
