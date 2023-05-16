@@ -1,16 +1,26 @@
 import {defs, tiny} from './examples/common.js';
 
-export class Drone extends Shape {
-    constructor(props) {
-        super(props);
+const {
+    Vector, Vector3, vec, vec3, vec4, color, hex_color, Matrix, Mat4, Light, Shape, Material, Scene,
+} = tiny;
+
+export class Oceans14 extends Scene {
+    constructor() {
+        super();
 
         this.shapes = {
-            head: new defs.Subdivided_Sphere(4),
-            leg: new Cube(),
-
+            //Drone parts
+            head: new defs.Subdivision_Sphere(4),
+            leg: new defs.Cube(),
+            nut: new defs.Subdivision_Sphere(4),
+            blade: new defs.Windmill(4),
         }
     }
 
+    display(context, program_state){
+        let model_transform = Mat4.identity();
+        this.shapes.blade.draw(context, program_state, model_transform);
+    }
 }
 /*const {
     Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene,
