@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7b88f1da-30ac-4a90-ae8d-cbd0325b7c61" name="Changes" comment="Deleted drone class and moved drone parts to main scene, display function not working">
+    <list default="true" id="7b88f1da-30ac-4a90-ae8d-cbd0325b7c61" name="Changes" comment="Drone skeleton + rotating, trying to get Windmill going">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/project/oceans14.js" beforeDir="false" afterPath="$PROJECT_DIR$/project/oceans14.js" afterDir="false" />
     </list>
@@ -72,7 +72,10 @@
       <workItem from="1684271836140" duration="38000" />
       <workItem from="1684271887558" duration="390000" />
       <workItem from="1684277863951" duration="1700000" />
-      <workItem from="1684285000888" duration="1353000" />
+      <workItem from="1684285000888" duration="1403000" />
+      <workItem from="1684297608967" duration="2607000" />
+      <workItem from="1684300278281" duration="222000" />
+      <workItem from="1684300537053" duration="4168000" />
     </task>
     <task id="LOCAL-00001" summary="barebones of Drone class and declaration of main scene class">
       <created>1684030090906</created>
@@ -81,7 +84,14 @@
       <option name="project" value="LOCAL" />
       <updated>1684030090906</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Drone skeleton + rotating, trying to get Windmill going">
+      <created>1684290918870</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1684290918870</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -101,6 +111,7 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="barebones of Drone class and declaration of main scene class" />
-    <option name="LAST_COMMIT_MESSAGE" value="barebones of Drone class and declaration of main scene class" />
+    <MESSAGE value="Drone skeleton + rotating, trying to get Windmill going" />
+    <option name="LAST_COMMIT_MESSAGE" value="Drone skeleton + rotating, trying to get Windmill going" />
   </component>
 </project>
