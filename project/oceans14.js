@@ -22,7 +22,7 @@ class Line extends Shape {
     constructor() {
         super("position", "color");
         this.arrays.position = Vector3.cast(
-            [-15, 0, 0], [15, 0, 0]
+            [-12, 0, 0], [12, 0, 0]
         );
         this.arrays.color = [
             vec4(0, 1, 0, 1), vec4(0, 1, 0, 1)
@@ -30,11 +30,6 @@ class Line extends Shape {
         this.indices = true; // not necessary
     }
 }
-
-class LaserBox extends Shape {
-
-}
-
 
 export class Oceans14 extends Scene {
     constructor() {
@@ -49,12 +44,14 @@ export class Oceans14 extends Scene {
             line: new Line(),
             square: new defs.Square(),
             laser_box: new defs.Subdivision_Sphere(4),
+            laser_box_2: new defs.Rounded_Capped_Cylinder(30, 30, [0,1]),
+            cube: new defs.Cube(),
         };
 
         // *** Materials
         this.materials = {
             test: new Material(new defs.Phong_Shader(),
-                {ambient: .4, diffusivity: .6, color: hex_color("#ffffff")}),
+                {ambient: .3, diffusivity: .6, color: hex_color("#ffffff")}),
             laser: new Material(new defs.Basic_Shader(),
                 {ambient: 1, diffusivity: 1}), // ambient set to max to make laser nice and bright
             texture: new Material(new Textured_Phong(), {
@@ -98,10 +95,6 @@ export class Oceans14 extends Scene {
          });
      }
 
-    display_lasers(t) {
-
-    }
-
     display(context, program_state) {
         // display():  Called once per frame of animation.
         // Setup -- This part sets up the scene's overall camera matrix, projection matrix, and lights:
@@ -122,53 +115,33 @@ export class Oceans14 extends Scene {
 
         const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
         const t_seconds = program_state.animation_time;
-        const yellow = hex_color("#fac91a");
+        const gray = hex_color("#808080");
         let model_transform = Mat4.identity();
         let model_transform_background = Mat4.identity();
         let model_transform_lasers = Mat4.identity();
         let model_transform_laser_box = Mat4.identity();
+        let model_transform2 = Mat4.identity();
+
+        // rotation angle- go from pi/1.5 to -pi/2 for laser on the right hand side of screen
+        let sin_laser_1 =  Math.sin(t/2);
 
 
+        // translate and draw laser
+        model_transform_lasers = model_transform_lasers.times(Mat4.translation(12, 0, 0));
+        model_transform_lasers = model_transform_lasers.times(Mat4.rotation(sin_laser_1, 0, 0, 1));
+        model_transform_lasers = model_transform_lasers.times(Mat4.translation(-12, 0, 0));
+        this.shapes.line.draw(context, program_state, model_transform_lasers, this.materials.laser, "LINES");
 
-        if (this.game_started === false)
-        {
-            // display a loading screen
+        // translate and draw laser box
+        model_transform_laser_box = model_transform_laser_box.times(Mat4.translation(12.5, 0, 0));
+        model_transform_laser_box = model_transform_laser_box.times(Mat4.scale(1, 0.7, 0.7));
+        model_transform_laser_box = model_transform_laser_box.times(Mat4.rotation(-Math.PI/2, 0, 1, 0));
+        this.shapes.laser_box_2.draw(context, program_state, model_transform_laser_box, this.materials.test.override({color: gray}));
 
+        model_transform2 = model_transform2.times(Mat4.translation(14.5, 0, 0));
+        model_transform2 = model_transform2.times(Mat4.scale(1.5, 0.8, 0.8));
+        this.shapes.cube.draw(context, program_state, model_transform2, this.materials.test.override({color: gray}));
 
-
-
-        }
-        else
-        {
-
-            // setup lasers
-            // 2 lasers at random spots along sides of view-one on each side, and random spots must be "near" middle?
-            // will be "coming out" of laser generator devices
-            // u have to dodge the 2 lasers
-            // maybe we could have an easy/medium/hard mode that decides the
-            // speeds of the lasers/number of lasers and length of lasers?
-
-
-
-
-            // rotation angle- go from pi/1.5 to -pi/2 for laser on the right hand side of screen
-            let sin_laser_1 =  Math.sin(t);
-
-
-            // // make laser move towards you
-            model_transform_lasers = model_transform_lasers.times(Mat4.translation(15, 0, 0));
-            model_transform_lasers = model_transform_lasers.times(Mat4.rotation(sin_laser_1, 0, 0, 1));
-            model_transform_lasers = model_transform_lasers.times(Mat4.translation(-15, 0, 0));
-            this.shapes.line.draw(context, program_state, model_transform_lasers, this.materials.laser, "LINES");
-
-            model_transform_laser_box = model_transform_laser_box.times(Mat4.translation(16, 0, 0));
-            model_transform_laser_box = model_transform_laser_box.times(Mat4.scale(0.8, 0.8, 0.8));
-            this.shapes.laser_box.draw(context, program_state, model_transform_laser_box, this.materials.test.override({color: yellow}));
-            model_transform = model_transform.times(Mat4.translation(0, -2, 0));
-
-
-
-        }
 
     }
 }
