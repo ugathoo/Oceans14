@@ -16,7 +16,7 @@ class Line extends Shape {
     constructor() {
         super("position", "color");
         this.arrays.position = Vector3.cast(
-            [-15, 0, 0], [15, 0, 0]
+            [-18, 0, 0], [18, 0, 0]
         );
         this.arrays.color = [
             vec4(0, 1, 0, 1), vec4(0, 1, 0, 1)
@@ -79,10 +79,12 @@ export class Oceans14 extends Scene {
             }),
         };
 
-        this.initial_camera_location = Mat4.look_at(vec3(0, 10, 20), vec3(0, 0, 0), vec3(0, 1, 0));
-        // this.initial_camera_location = this.initial_camera_location.times(Mat4.rotation(-1*Math.PI/12, 1, 0, 0));
-        //this.initial_camera_location = Mat4.look_at(vec3(1, 0, 0), vec3(0, 1, 0), vec3(0, 0, 1));
-       // this.initial_camera_location = this.initial_camera_location.times(Mat4.translation(0, 70, 0));
+        // original camera location
+        // this.initial_camera_location = Mat4.look_at(vec3(0, 10, 20), vec3(0, 0, 0), vec3(0, 1, 0));
+
+        // new camera location
+        this.initial_camera_location = Mat4.identity();
+        this.initial_camera_location = this.initial_camera_location.times(Mat4.translation(0, 0, -30));
         this.game_started = true;
     }
 
@@ -139,9 +141,10 @@ export class Oceans14 extends Scene {
             // translate and draw laser
             if (left === false) {
                 model_transform = model_transform.times(Mat4.translation(0, 0, 0));
-                model_transform = model_transform.times(Mat4.translation(15, 0, 0));
+                model_transform = model_transform.times(Mat4.translation(18, 0, 0));
                 model_transform = model_transform.times(Mat4.rotation(sin_laser_1, 0, 0, 1));
-                model_transform = model_transform.times(Mat4.translation(-15, 0, 0));
+               // model_transform = model_transform.times(Mat4.rotation(sin_laser_1, 0, 1, 0));
+                model_transform = model_transform.times(Mat4.translation(-18, 0, 0));
                 this.shapes.line.draw(context, program_state, model_transform, this.materials.laser, "LINES");
                 model_transform = Mat4.identity();
             }
@@ -158,13 +161,13 @@ export class Oceans14 extends Scene {
 
 
         // translate and draw laser box
-        model_transform = model_transform.times(Mat4.translation(15.4, 0, 0));
+        model_transform = model_transform.times(Mat4.translation(18.4, 0, 0));
         model_transform = model_transform.times(Mat4.scale(0.5, 0.3, 0.3));
         model_transform = model_transform.times(Mat4.rotation(-Math.PI / 2, 0, 1, 0));
         this.shapes.laser_box_2.draw(context, program_state, model_transform, this.materials.test.override({color: gray}));
         model_transform = Mat4.identity();
 
-        model_transform = model_transform.times(Mat4.translation(16.2, 0, 0));
+        model_transform = model_transform.times(Mat4.translation(19.2, 0, 0));
         model_transform = model_transform.times(Mat4.scale(0.7, 0.4, 0.4));
         this.shapes.cube.draw(context, program_state, model_transform, this.materials.test.override({color: gray}));
         model_transform = Mat4.identity();
@@ -205,10 +208,14 @@ export class Oceans14 extends Scene {
         this.draw_drone(context, program_state, model_transform, t);
         model_transform = Mat4.identity();
         // draw laser that's rotating
-        let rotating = true;
+
         this.draw_laser(context, program_state, model_transform, t, true, 0, false);
 
         // draw laser that's flashing
+
+
+
+
 
 
     }
