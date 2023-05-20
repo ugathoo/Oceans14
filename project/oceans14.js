@@ -16,7 +16,7 @@ class Line extends Shape {
     constructor() {
         super("position", "color");
         this.arrays.position = Vector3.cast(
-            [-18, 0, 0], [18, 0, 0]
+            [-21.5, 0, 0], [21.5, 0, 0]
         );
         this.arrays.color = [
             vec4(0, 1, 0, 1), vec4(0, 1, 0, 1)
@@ -86,6 +86,56 @@ export class Oceans14 extends Scene {
         this.initial_camera_location = Mat4.identity();
         this.initial_camera_location = this.initial_camera_location.times(Mat4.translation(0, 0, -30));
         this.game_started = true;
+
+
+        // get random values for lasers
+        // random value between 8 and -8 for y-axis location of laser box/laser -> but make sure they are at least 4 units away from each other
+         let random_amount = Math.random();
+         this.circle_laser_location = (-8. * random_amount) + (8. * (1. - random_amount));
+
+         random_amount = Math.random();
+         let linear_combo = (-8. * random_amount) + (8. * (1. - random_amount));
+         while (Math.abs(linear_combo - this.circle_laser_location) < 4.)
+         {
+             random_amount = Math.random();
+             linear_combo = (-8. * random_amount) + (8. * (1. - random_amount));
+         }
+         this.rot_laser_location = linear_combo;
+
+         random_amount = Math.random();
+         linear_combo = (-8. * random_amount) + (8. * (1. - random_amount));
+         while (Math.abs(linear_combo - this.circle_laser_location) < 4. || Math.abs(linear_combo - this.rot_laser_location) < 4.)
+        {
+            random_amount = Math.random();
+            linear_combo = (-8. * random_amount) + (8. * (1. - random_amount));
+        }
+        this.flash_laser_location = linear_combo;
+
+        // get random value for left or right for each laser
+        random_amount = Math.random();
+        if (random_amount > 0.5)
+            this.circle_laser_side = true;
+        else
+            this.circle_laser_side = false;
+
+        random_amount = Math.random();
+        if (random_amount > 0.5)
+            this.rot_laser_side = true;
+        else
+            this.rot_laser_side = false;
+
+        if (this.circle_laser_side === true && this.rot_laser_side === true)
+            this.flash_laser_side = false;
+        else if (this.circle_laser_side === false && this.rot_laser_side === false)
+            this.flash_laser_side = true;
+        else {
+            random_amount = Math.random();
+            if (random_amount > 0.5)
+                this.flash_laser_side = true;
+            else
+                this.flash_laser_side = false;
+        }
+
     }
 
     draw_drone(context, program_state, model_transform, t) {
@@ -129,49 +179,52 @@ export class Oceans14 extends Scene {
 
     }
 
-    draw_laser(context, program_state, model_transform, t, rotating, location, left)
+
+
+
+
+    draw_laser(context, program_state, model_transform, t, rotating, around, location, left)
     {
         const gray = hex_color("#808080");
-
-        // laser
+        let translation_times = -1;
+        if (left === false) {
+            translation_times = 1;
+        }
         if (rotating === true) {
-            // rotation angle- go from pi/1.5 to -pi/2 for laser on the right hand side of screen
-            let sin_laser_1 = Math.sin(t / 2);
-
             // translate and draw laser
-            if (left === false) {
-                model_transform = model_transform.times(Mat4.translation(0, 0, 0));
-                model_transform = model_transform.times(Mat4.translation(18, 0, 0));
-                model_transform = model_transform.times(Mat4.rotation(sin_laser_1, 0, 0, 1));
-               // model_transform = model_transform.times(Mat4.rotation(sin_laser_1, 0, 1, 0));
-                model_transform = model_transform.times(Mat4.translation(-18, 0, 0));
-                this.shapes.line.draw(context, program_state, model_transform, this.materials.laser, "LINES");
-                model_transform = Mat4.identity();
+            let laser_rot = Math.sin(t / 2);
+            if (around === true) {
+                laser_rot = t / 2;
             }
-            else // on the right side
-            {
-
-            }
-        }
-        else
-        {
+            // draw rotating laser
+            model_transform = model_transform.times(Mat4.translation(0, location, 0));
+            model_transform = model_transform.times(Mat4.translation(translation_times * 21.5, 0, 0));
+            model_transform = model_transform.times(Mat4.rotation(laser_rot, 0, 0, 1));
+            model_transform = model_transform.times(Mat4.translation(translation_times * -21.5, 0, 0));
             this.shapes.line.draw(context, program_state, model_transform, this.materials.laser, "LINES");
+            model_transform = Mat4.identity();
+        }
+        else {
+            // draw flashing laser
+            model_transform = model_transform.times(Mat4.translation(0, location, 0));
+            model_transform = model_transform.times(Mat4.translation(translation_times*21.5, 0, 0));
+            model_transform = model_transform.times(Mat4.translation(translation_times*-21.5, 0, 0));
+            if (Math.ceil(t) % 2 === 0)
+                this.shapes.line.draw(context, program_state, model_transform, this.materials.laser, "LINES");
+            model_transform = Mat4.identity();
+
         }
 
-
-
-        // translate and draw laser box
-        model_transform = model_transform.times(Mat4.translation(18.4, 0, 0));
+        // box for laser
+        model_transform = model_transform.times(Mat4.translation(translation_times*21.6, location, 0));
         model_transform = model_transform.times(Mat4.scale(0.5, 0.3, 0.3));
-        model_transform = model_transform.times(Mat4.rotation(-Math.PI / 2, 0, 1, 0));
         this.shapes.laser_box_2.draw(context, program_state, model_transform, this.materials.test.override({color: gray}));
         model_transform = Mat4.identity();
 
-        model_transform = model_transform.times(Mat4.translation(19.2, 0, 0));
-        model_transform = model_transform.times(Mat4.scale(0.7, 0.4, 0.4));
+        model_transform = model_transform.times(Mat4.translation(translation_times*21.6, location, -1));
+        model_transform = model_transform.times(Mat4.scale(0.6, 0.6, 0.6));
         this.shapes.cube.draw(context, program_state, model_transform, this.materials.test.override({color: gray}));
         model_transform = Mat4.identity();
-
     }
     //
     make_control_panel() {
@@ -207,12 +260,11 @@ export class Oceans14 extends Scene {
 
         this.draw_drone(context, program_state, model_transform, t);
         model_transform = Mat4.identity();
-        // draw laser that's rotating
 
-        this.draw_laser(context, program_state, model_transform, t, true, 0, false);
-
-        // draw laser that's flashing
-
+        // draw the 3 lasers at random locations on screen
+        this.draw_laser(context, program_state, model_transform, t, true, true, this.circle_laser_location, this.circle_laser_side);
+        this.draw_laser(context, program_state, model_transform, t, true, false, this.rot_laser_location, this.rot_laser_side);
+        this.draw_laser(context, program_state, model_transform, t, false, false, this.flash_laser_location, this.flash_laser_side);
 
 
 
