@@ -304,6 +304,9 @@ export class Oceans14 extends Scene {
 
         const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
         let model_transform = Mat4.identity();
+
+
+
         // draw background
         model_transform = model_transform.times(Mat4.scale(450, 450, 450));
         model_transform = model_transform.times(Mat4.translation(0, 0, -1.2));
@@ -313,6 +316,9 @@ export class Oceans14 extends Scene {
         if (this.game_started) {
             program_state.set_camera(Mat4.identity().times(Mat4.translation(0, 0, -30)));
 
+            model_transform = Mat4.identity();
+            let pedestal = model_transform.times(Mat4.translation(0,-12,0));
+            this.shapes.cube.draw(context,program_state,pedestal,this.materials.test);
             model_transform = Mat4.identity();
             this.draw_jewel(context,program_state,model_transform,t);
             let drone_trans = model_transform;
