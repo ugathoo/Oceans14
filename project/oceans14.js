@@ -304,24 +304,22 @@ export class Oceans14 extends Scene {
 
         const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
         let model_transform = Mat4.identity();
-
-        this.draw_jewel(context,program_state,model_transform,t);
         // draw background
         model_transform = model_transform.times(Mat4.scale(450, 450, 450));
         model_transform = model_transform.times(Mat4.translation(0, 0, -1.2));
         this.shapes.square.draw(context, program_state, model_transform, this.materials.texture);
         model_transform = Mat4.identity();
 
-
-        let drone_trans = model_transform;
-        this.draw_drone(context, program_state, drone_trans, t);
-        //model_transform = Mat4.identity();
         if (this.game_started) {
             program_state.set_camera(Mat4.identity().times(Mat4.translation(0, 0, -30)));
 
-            this.draw_drone(context, program_state, model_transform, t);
             model_transform = Mat4.identity();
+            this.draw_jewel(context,program_state,model_transform,t);
+            let drone_trans = model_transform;
+            this.draw_drone(context, program_state, drone_trans, t);
 
+
+            model_transform = Mat4.identity();
             // draw the 3 lasers at random locations on screen
             this.draw_laser(context, program_state, model_transform, t, true, true, this.circle_laser_location, this.circle_laser_side);
             if (this.medium === true || this.hard === true)
