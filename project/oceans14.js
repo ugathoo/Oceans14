@@ -93,6 +93,8 @@ export class Oceans14 extends Scene {
         this.initial_camera_location = Mat4.identity();
         this.initial_camera_location = this.initial_camera_location.times(Mat4.translation(0, 0, -30));
         this.game_started = false;
+        this.medium = false;
+        this.hard = false;
 
 
         // get random values for lasers
@@ -243,6 +245,18 @@ export class Oceans14 extends Scene {
             if (this.game_started === false)
                 this.game_started = true;
         });
+        this.key_triggered_button("Easy Mode", ["e"], () => {
+            this.medium = false;
+            this.hard = false;
+        });
+        this.key_triggered_button("Medium Mode", ["m"], () => {
+            this.medium = true;
+            this.hard = false;
+        });
+        this.key_triggered_button("Hard Mode", ["h"], () => {
+            this.medium = false;
+            this.hard = true;
+        });
     }
 
     display(context, program_state) {
@@ -277,8 +291,10 @@ export class Oceans14 extends Scene {
 
             // draw the 3 lasers at random locations on screen
             this.draw_laser(context, program_state, model_transform, t, true, true, this.circle_laser_location, this.circle_laser_side);
-            this.draw_laser(context, program_state, model_transform, t, true, false, this.rot_laser_location, this.rot_laser_side);
-            this.draw_laser(context, program_state, model_transform, t, false, false, this.flash_laser_location, this.flash_laser_side);
+            if (this.medium === true || this.hard === true)
+                this.draw_laser(context, program_state, model_transform, t, true, false, this.rot_laser_location, this.rot_laser_side);
+            if (this.hard === true)
+                this.draw_laser(context, program_state, model_transform, t, false, false, this.flash_laser_location, this.flash_laser_side);
 
         }
         else // pre-game screen
