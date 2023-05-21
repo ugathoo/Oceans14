@@ -46,6 +46,27 @@ class PyramidFace extends Shape{
         //this.indices.push(0,2,1);
     }
 }
+
+class NegPyramidFace extends Shape{
+    constructor() {
+        super('position','normal');
+        this.arrays.position = Vector3.cast(
+            [1,0,0],[0,0,-1],[0,-2,0],[0,0,-1],[-1,0,0],
+            [0,-2,0],[-1,0,0],[0,0,1],[0,-2,0],[0,0,1],[1,0,0],
+            [0,-2,0],[0,0,1],[1,0,0],[0,0,-1],[-1,0,0],[0,0,1],[0,0,-1]
+        );
+        this.arrays.normal = Vector3.cast(
+            [2,-2,1],[2,-2,1],[2,-2,1],
+            [-2,-2,1],[-2,-2,1],[-2,-2,1],
+            [-2,2,1],[-2,2,1],[-2,2,1],
+            [2,2,1],[2,2,1],[2,2,1],
+            [0,-1,0],[0,-1,0],[0,-1,0],
+            [0,-1,0],[0,-1,0],[0,-1,0]
+        );
+
+        //this.indices.push(0,2,1);
+    }
+}
 export class Oceans14 extends Scene {
     constructor() {
         // constructor(): Scenes begin by populating initial values like the Shapes and Materials they'll need.
@@ -65,6 +86,8 @@ export class Oceans14 extends Scene {
             //blade: new defs.Windmill(3),
             nut: new defs.Subdivision_Sphere(1),
             blade: new PyramidFace(),
+            gem_half1: new PyramidFace(),
+            gem_half2: new NegPyramidFace(),
             text: new Text_Line(35),
         };
 
@@ -149,7 +172,7 @@ export class Oceans14 extends Scene {
 
     draw_drone(context, program_state, model_transform, t) {
         const pink = hex_color("#ed99f0");
-        let head_transform = model_transform.times(Mat4.rotation(t, 0, 1, 0));
+        let head_transform = model_transform.times(Mat4.translation(-17,10,0)).times(Mat4.rotation(t, 0, 1, 0));
         this.shapes.head.draw(context, program_state, head_transform, this.materials.test.override({color: pink}));
         let leg_transform1 = head_transform.times(Mat4.scale(1.3, 0.2, 0.2)).times(Mat4.translation(1.25, 0, 0));
         let leg_transform2 = head_transform.times(Mat4.scale(1.3, 0.2, 0.2)).times(Mat4.translation(-1.25, 0, 0));
@@ -189,7 +212,13 @@ export class Oceans14 extends Scene {
     }
 
 
-
+    draw_jewel(context, program_state, model_transform, t){
+        const red = hex_color('#FF0000');
+        let gem_transform = model_transform.times(Mat4.translation(0,-9.3,0)).times(Mat4.scale(0.5,0.5,0.5)).times(Mat4.rotation(t,0,1,0));
+        this.shapes.gem_half1.draw(context,program_state,gem_transform,this.materials.test.override({color:red}));
+        let gem2_transform = model_transform.times(Mat4.translation(0,-9.3,0)).times(Mat4.scale(0.5,0.5,0.5)).times(Mat4.rotation(t,0,1,0));
+        this.shapes.gem_half2.draw(context,program_state,gem2_transform,this.materials.test.override({color:red}));
+    }//.times(Mat4.rotation(-135,0,0,1))
 
 
     draw_laser(context, program_state, model_transform, t, rotating, around, location, left) // make it so that laser can't go super high up
@@ -276,6 +305,7 @@ export class Oceans14 extends Scene {
         const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
         let model_transform = Mat4.identity();
 
+        this.draw_jewel(context,program_state,model_transform,t);
         // draw background
         model_transform = model_transform.times(Mat4.scale(450, 450, 450));
         model_transform = model_transform.times(Mat4.translation(0, 0, -1.2));
@@ -283,6 +313,9 @@ export class Oceans14 extends Scene {
         model_transform = Mat4.identity();
 
 
+        let drone_trans = model_transform;
+        this.draw_drone(context, program_state, drone_trans, t);
+        //model_transform = Mat4.identity();
         if (this.game_started) {
             program_state.set_camera(Mat4.identity().times(Mat4.translation(0, 0, -30)));
 
