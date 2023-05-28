@@ -234,11 +234,14 @@ export class Oceans14 extends Scene {
             // translate and draw laser
             let laser_rot = 0;
             if (left === true)
-                laser_rot = Math.sin(t / 2) - Math.PI/3;
+                laser_rot = Math.sin(t / 2) - Math.PI/3.1;
             else
-                laser_rot = Math.sin(t / 2) + Math.PI/3;
-            if (around === true) {
-                laser_rot = Math.sin(t / 2)/4;
+                laser_rot = Math.sin(t / 2) + Math.PI/3.1;
+            if (around === true && left === true) {
+                laser_rot = Math.sin(t / 2)/4 - Math.PI/13;
+            }
+            if (around === true && left === false) {
+                laser_rot = Math.sin(t / 2)/4 + Math.PI/13;
             }
             // draw rotating laser
             model_transform = model_transform.times(Mat4.translation(0, location, 0));
