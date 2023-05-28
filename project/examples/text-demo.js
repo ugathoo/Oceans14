@@ -62,7 +62,7 @@ export class Text_Demo extends Scene {             // **Text_Demo** is a scene w
         // To show text you need a Material like this one:
         this.text_image = new Material(texture, {
             ambient: 1, diffusivity: 0, specularity: 0,
-            texture: new Texture("assets/text.png")
+            texture: new Texture("examples/assets/text.png")
         });
     }
 

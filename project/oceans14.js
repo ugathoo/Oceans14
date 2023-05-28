@@ -1,5 +1,5 @@
 import {defs, tiny} from './examples/common.js';
-import { Text_Line } from './examples/text-demo.js';
+import {Text_Line} from './examples/text-demo.js';
 
 const {
     Vector, Vector3, vec, vec3, vec4, color, hex_color, Matrix, Mat4, Light, Shape, Material, Scene, Shader, Texture
@@ -91,7 +91,7 @@ export class Oceans14 extends Scene {
             text: new Text_Line(35),
         };
 
-        const textured = new defs.Textured_Phong(1);
+        const texture = new defs.Textured_Phong(1);
 
         // *** Materials
         this.materials = {
@@ -105,9 +105,11 @@ export class Oceans14 extends Scene {
                 texture: new Texture("examples/assets/zpos.png", "NEAREST")
             }),
 
-            text_material: new Material(textured, {
-                ambient: 1, diffusivity: 0, specularity: 0, texture: new Texture("assets/text.png")}),
-        };
+            text_image: new Material(new Textured_Phong(1), {
+                ambient: 1, diffusivity: 0, specularity: 0,
+                texture: new Texture("examples/assets/text.png")
+            }),
+        }
 
         // original camera location
         // this.initial_camera_location = Mat4.look_at(vec3(0, 10, 20), vec3(0, 0, 0), vec3(0, 1, 0));
@@ -336,12 +338,33 @@ export class Oceans14 extends Scene {
         }
         else // pre-game screen
         {
+            model_transform = Mat4.identity();
+            model_transform = model_transform.times(Mat4.rotation(t, 0, 1, 0));
+            model_transform = model_transform.times(Mat4.scale(1.5, 1.5, 1));
+            model_transform = model_transform.times(Mat4.translation(-6, 0, -1.1));
 
-           // this.shapes.text.set_string("Oceans 14", context.context);
-          //  this.shapes.text.draw(context.context, program_state, model_transform, this.materials.text_material);
-            //this.shapes.square.draw(context, program_state, model_transform.times(Mat4.scale(2, 2, .50)), this.materials.credit_square);
+           //
+            this.shapes.text.set_string("Oceans 14", context.context);
+           this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+           // this.shapes.square.draw(context, program_state, model_transform.times(Mat4.scale(2, 2, .50)), this.materials.credit_square);
 
+            model_transform = Mat4.identity();
+            model_transform = model_transform.times(Mat4.scale(0.7, 0.7, 1));
+            model_transform = model_transform.times(Mat4.translation(-30, -12.5, -1.1));
+            this.shapes.text.set_string("Press r to begin", context.context);
+            this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
 
+            model_transform = Mat4.identity();
+            model_transform = model_transform.times(Mat4.scale(0.7, 0.7, 1));
+            model_transform = model_transform.times(Mat4.translation(-30, -16, -1.1));
+            this.shapes.text.set_string("Choose mode: easy (e) medium (m)", context.context);
+            this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+
+            model_transform = model_transform.times(Mat4.translation(49, 0, 0));
+            this.shapes.text.set_string("hard (h)", context.context);
+            this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+
+            model_transform = Mat4.identity();
         }
 
 
