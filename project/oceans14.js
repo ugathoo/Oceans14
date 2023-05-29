@@ -122,6 +122,9 @@ export class Oceans14 extends Scene {
         this.hard = false;
 
 
+        this.drone_model_transform = Mat4.identity();
+
+
         // get random values for lasers
         // random value between 8 and -8 for y-axis location of laser box/laser -> but make sure they are at least 4 units away from each other
          let random_amount = Math.random();
@@ -273,6 +276,10 @@ export class Oceans14 extends Scene {
         this.shapes.cube.draw(context, program_state, model_transform, this.materials.test.override({color: gray}));
         model_transform = Mat4.identity();
     }
+
+
+
+
     //
     make_control_panel() {
         this.key_triggered_button("Start Game", ["r"], () => {
@@ -290,6 +297,19 @@ export class Oceans14 extends Scene {
         this.key_triggered_button("Hard Mode", ["h"], () => {
             this.medium = false;
             this.hard = true;
+        });
+        this.key_triggered_button("Move Up", ["w"], () => {
+            this.drone_model_transform = this.drone_model_transform.times(Mat4.translation(0, 1, 0));
+            console.log(this.drone_model_transform - Mat4.identity());
+        });
+        this.key_triggered_button("Move Left", ["a"], () => {
+            this.drone_model_transform = this.drone_model_transform.times(Mat4.translation(-1, 0, 0));
+        });
+        this.key_triggered_button("Move Right", ["d"], () => {
+            this.drone_model_transform = this.drone_model_transform.times(Mat4.translation(1, 0, 0));
+        });
+        this.key_triggered_button("Move Down", ["s"], () => {
+            this.drone_model_transform = this.drone_model_transform.times(Mat4.translation(0, -1, 0));
         });
     }
 
@@ -326,8 +346,8 @@ export class Oceans14 extends Scene {
             this.shapes.cube.draw(context,program_state,pedestal,this.materials.test);
             model_transform = Mat4.identity();
             this.draw_jewel(context,program_state,model_transform,t);
-            let drone_trans = model_transform;
-            this.draw_drone(context, program_state, drone_trans, t);
+            //let drone_trans = model_transform;
+            this.draw_drone(context, program_state, this.drone_model_transform, t);
 
 
             model_transform = Mat4.identity();
