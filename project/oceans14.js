@@ -109,6 +109,11 @@ export class Oceans14 extends Scene {
                 ambient: 1, diffusivity: 0, specularity: 0,
                 texture: new Texture("examples/assets/text.png")
             }),
+
+            // metallic_laser_box: new Material(new Textured_Phong(), {
+            //     ambient: 0.9, diffusivity: 1, specularity: 0,
+            //     texture: new Texture("examples/assets/metallic2.png")
+            // }),
         }
 
         // original camera location
@@ -272,6 +277,7 @@ export class Oceans14 extends Scene {
         model_transform = model_transform.times(Mat4.translation(translation_times*21.6, location, 0));
         model_transform = model_transform.times(Mat4.scale(0.5, 0.3, 0.3));
         this.shapes.laser_box_2.draw(context, program_state, model_transform, this.materials.test.override({color: gray}));
+       // this.shapes.laser_box_2.draw(context, program_state, model_transform, this.materials.test.override({color: gray}));
         model_transform = Mat4.identity();
 
         model_transform = model_transform.times(Mat4.translation(translation_times*21.6, location, -1));
@@ -408,14 +414,20 @@ export class Oceans14 extends Scene {
            // this.shapes.square.draw(context, program_state, model_transform.times(Mat4.scale(2, 2, .50)), this.materials.credit_square);
 
             model_transform = Mat4.identity();
-            model_transform = model_transform.times(Mat4.scale(0.7, 0.7, 1));
-            model_transform = model_transform.times(Mat4.translation(-30, -12.5, -1.1));
+            model_transform = model_transform.times(Mat4.scale(0.5, 0.5, 1));
+            model_transform = model_transform.times(Mat4.translation(-42.7, -14.5, -1.1));
             this.shapes.text.set_string("Press r to begin", context.context);
             this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
 
             model_transform = Mat4.identity();
-            model_transform = model_transform.times(Mat4.scale(0.7, 0.7, 1));
-            model_transform = model_transform.times(Mat4.translation(-30, -16, -1.1));
+            model_transform = model_transform.times(Mat4.scale(0.5, 0.5, 1));
+            model_transform = model_transform.times(Mat4.translation(-42.7, -18.6, -1.1));
+            this.shapes.text.set_string("Press t for tutorial", context.context);
+            this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+
+            model_transform = Mat4.identity();
+            model_transform = model_transform.times(Mat4.scale(0.5, 0.5, 1));
+            model_transform = model_transform.times(Mat4.translation(-42.7, -22.5, -1.1));
             this.shapes.text.set_string("Choose mode: easy (e) medium (m)", context.context);
             this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
 
@@ -423,7 +435,19 @@ export class Oceans14 extends Scene {
             this.shapes.text.set_string("hard (h)", context.context);
             this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
 
+
             model_transform = Mat4.identity();
+            model_transform = model_transform.times(Mat4.rotation(Math.PI/6, 0, 0, 1));
+            model_transform = model_transform.times(Mat4.scale(2, 2, 2));
+            model_transform = model_transform.times(Mat4.translation(13, -4.5, 0));
+            this.draw_drone(context, program_state, model_transform, t);
+
+            model_transform = Mat4.identity();
+            model_transform = model_transform.times(Mat4.scale(3, 3, 3));
+            model_transform = model_transform.times(Mat4.translation(5, 7, 0));
+            this.draw_jewel(context,program_state,model_transform,t);
+
+
         }
 
 
