@@ -116,7 +116,7 @@ export class Oceans14 extends Scene {
             // }),
             tutorial_box: new Material(new Textured_Phong(), {
                 ambient: 1, diffusivity: 0, specularity: 0,
-                texture: new Texture("examples/assets/concrete_block.png")
+                texture: new Texture("examples/assets/Blue_Big_Tile.png")
             }),
         }
 
@@ -248,17 +248,27 @@ export class Oceans14 extends Scene {
         }
         if (rotating === true) {
             // translate and draw laser
-            if (left === true)
-                laser_rot = Math.sin(t / 2) - Math.PI/3.1;
-            else
-                laser_rot = Math.sin(t / 2) + Math.PI/3.1;
+            if (left === true) {
+                laser_rot = Math.sin(t / 2) - Math.PI / 3.1;
+                if (tutorial === true)
+                    laser_rot = Math.sin(2) - Math.PI /1.6;
+            }
+            else {
+                laser_rot = Math.sin(t / 2) + Math.PI / 3.1;
+                if (tutorial === true)
+                    laser_rot = Math.sin(2) + Math.PI / 3;
+            }
             if (around === true && left === true) {
                 //laser_rot = Math.sin(t / 2)/4 - Math.PI/13;
                 laser_rot = Math.sin(t/1.2) - Math.PI/3.1;
+                if (tutorial === true)
+                    laser_rot = Math.sin(2) - Math.PI /1.6;
             }
             if (around === true && left === false) {
                 //laser_rot = Math.sin(t / 2)/4 + Math.PI/13;
                 laser_rot = Math.sin(t/1.2) + Math.PI/3.1;
+                if (tutorial === true)
+                    laser_rot = Math.sin(2) + Math.PI / 3;
             }
             // draw rotating laser
             model_transform = model_transform.times(Mat4.translation(0, location, back));
@@ -273,7 +283,7 @@ export class Oceans14 extends Scene {
             model_transform = model_transform.times(Mat4.translation(0, location, back));
             model_transform = model_transform.times(Mat4.translation(translation_times*21.5, 0, 0));
             model_transform = model_transform.times(Mat4.translation(translation_times*-21.5, 0, 0));
-            if (Math.ceil(t) % 2 === 0)
+            if (Math.ceil(t) % 2 === 0 && tutorial === false)
                 this.shapes.line.draw(context, program_state, model_transform, this.materials.laser, "LINES");
             model_transform = Mat4.identity();
 
@@ -294,7 +304,178 @@ export class Oceans14 extends Scene {
         return laser_rot;
     }
 
+    tutorial_step_0(context, program_state, model_transform) {
+        model_transform = Mat4.identity();
+        // create box
+        model_transform = model_transform.times(Mat4.scale(9, 9, 9));
+        this.shapes.square.draw(context, program_state, model_transform, this.materials.tutorial_box);
+        // add text to box
+        model_transform = Mat4.identity();
+        model_transform = model_transform.times(Mat4.scale(0.5, 0.5, 1));
+        model_transform = model_transform.times(Mat4.translation(-7, 7.7, 5));
+        this.shapes.text.set_string("Welcome to", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.translation(0.15, -3, 0));
+        this.shapes.text.set_string("Oceans 14!", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.scale(0.8, 0.8, 1));
+        model_transform = model_transform.times(Mat4.translation(1.8, -5.3, 0));
+        this.shapes.text.set_string("Objective:", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.translation(-6.8, -2.5, 0));
+        this.shapes.text.set_string("Capture Jewel using", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.translation(5.5, -2.5, 0));
+        this.shapes.text.set_string("drone while", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.translation(-2, -2.5, 0));
+        this.shapes.text.set_string("dodging lasers", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.scale(0.7, 0.7, 1));
+        model_transform = model_transform.times(Mat4.translation(0, -9.3, 0));
+        this.shapes.text.set_string("press n to continue", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = Mat4.identity();
+    }
 
+    tutorial_step_1(context, program_state, model_transform) {
+        // create box
+        model_transform = model_transform.times(Mat4.scale(9, 9, 9));
+        this.shapes.square.draw(context, program_state, model_transform, this.materials.tutorial_box);
+        // add text to box
+        model_transform = Mat4.identity();
+        model_transform = model_transform.times(Mat4.scale(0.7, 0.7, 1));
+        model_transform = model_transform.times(Mat4.translation(-3.7, 5.7, 5));
+        this.shapes.text.set_string("BEWARE:", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.scale(0.75, 0.75, 1));
+        model_transform = model_transform.times(Mat4.translation(-4.5, -4, 0));
+        this.shapes.text.set_string("lasers rotate", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.translation(5, -4, 0));
+        this.shapes.text.set_string("and may", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.translation(-2.8, -4, 0));
+        this.shapes.text.set_string("also flash!", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.scale(0.65, 0.65, 1));
+        model_transform = model_transform.times(Mat4.translation(-2, -8.5, 0));
+        this.shapes.text.set_string("press n to continue", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = Mat4.identity();
+    }
+
+    tutorial_step_2(context, program_state, model_transform) {
+        // draw box
+        model_transform = Mat4.identity();
+        model_transform = model_transform.times(Mat4.scale(5, 5, 5));
+        model_transform = model_transform.times(Mat4.translation(-1.35, 1.3, 0));
+        this.shapes.square.draw(context, program_state, model_transform, this.materials.tutorial_box);
+
+        // draw text
+        model_transform = Mat4.identity();
+        model_transform = model_transform.times(Mat4.scale(0.38, 0.38, 1));
+        model_transform = model_transform.times(Mat4.translation(-20.5, 19.7, 5));
+        this.shapes.text.set_string("navigate", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.translation(-2, -4.5, 0));
+        this.shapes.text.set_string("drone using", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.translation(1.7, -4.5, 0));
+        this.shapes.text.set_string("WASD keys", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.scale(0.6, 0.6, 1));
+        model_transform = model_transform.times(Mat4.translation(-3.4, -6.4, 0));
+        this.shapes.text.set_string("press n to continue", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = Mat4.identity();
+    }
+
+    tutorial_step_3(context, program_state, model_transform) {
+        // draw box
+        model_transform = Mat4.identity();
+        model_transform = model_transform.times(Mat4.scale(5, 5, 5));
+        model_transform = model_transform.times(Mat4.translation(1.35, -1.3, 0));
+        this.shapes.square.draw(context, program_state, model_transform, this.materials.tutorial_box);
+
+        // draw text
+        model_transform = Mat4.identity();
+        model_transform = model_transform.times(Mat4.scale(.38, 0.38, 1));
+        model_transform = model_transform.times(Mat4.translation(6.5, -8.7, 5));
+        this.shapes.text.set_string("win the game", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.translation(0, -4.5, 0));
+        this.shapes.text.set_string("by colliding", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.translation(1.3, -4.5, 0));
+        this.shapes.text.set_string("with jewel", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.scale(0.6, 0.6, 1));
+        model_transform = model_transform.times(Mat4.translation(-2.5, -6.4, 0));
+        this.shapes.text.set_string("press n to continue", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = Mat4.identity();
+    }
+
+    tutorial_step_4(context, program_state, model_transform) {
+        // draw box
+        model_transform = Mat4.identity();
+        model_transform = model_transform.times(Mat4.scale(5, 5, 5));
+        model_transform = model_transform.times(Mat4.translation(-2.8, -1.3, 0));
+        this.shapes.square.draw(context, program_state, model_transform, this.materials.tutorial_box);
+
+        // draw text
+        model_transform = Mat4.identity();
+        model_transform = model_transform.times(Mat4.scale(.34, 0.34, 1));
+        model_transform = model_transform.times(Mat4.translation(-43.4, -9.2, 5));
+        this.shapes.text.set_string("too easy? too", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.translation(0.8, -4.5, 0));
+        this.shapes.text.set_string("hard? change", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.translation(1.1, -4.5, 0));
+        this.shapes.text.set_string("mode below", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.scale(0.6, 0.6, 1));
+        model_transform = model_transform.times(Mat4.translation(-1.5, -8.9, 0));
+        this.shapes.text.set_string("press n to continue", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = Mat4.identity();
+    }
+
+    tutorial_step_5(context, program_state, model_transform) {
+        // create box
+        model_transform = model_transform.times(Mat4.scale(9, 9, 9));
+        this.shapes.square.draw(context, program_state, model_transform, this.materials.tutorial_box);
+
+        // add text to box
+        model_transform = Mat4.identity();
+        model_transform = model_transform.times(Mat4.scale(0.5, 0.5, 1));
+        model_transform = model_transform.times(Mat4.translation(-8, 10.2, 5));
+        this.shapes.text.set_string("when you're", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.translation(-2, -3, 0));
+        this.shapes.text.set_string("ready, press r", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.translation(2.1, -3, 0));
+        this.shapes.text.set_string("to begin or", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.translation(0, -3, 0));
+        this.shapes.text.set_string("t to return", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.translation(-2.2, -3, 0));
+        this.shapes.text.set_string("to home screen", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.scale(1.3, 1.3, 1));
+        model_transform = model_transform.times(Mat4.translation(2, -3.7, 0));
+        this.shapes.text.set_string("GOOD LUCK", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.scale(0.4, 0.4, 1));
+        model_transform = model_transform.times(Mat4.translation(5, -9.3, 0));
+        this.shapes.text.set_string("press r or t", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = Mat4.identity();
+    }
 
 
     //
@@ -337,6 +518,8 @@ export class Oceans14 extends Scene {
         });
         this.key_triggered_button("Next", ["n"], () => {
             this.tutorial_steps = this.tutorial_steps + 1;
+            if (this.tutorial_steps > 5)
+                this.tutorial = false;
         });
     }
 
@@ -411,19 +594,17 @@ export class Oceans14 extends Scene {
             model_transform = Mat4.identity();
             // add in tutorial steps!
             if (this.tutorial_steps === 0)
-            {
-                // create box
-                model_transform = model_transform.times(Mat4.scale(6, 6, 6));
-                model_transform = model_transform.times(Mat4.translation(0, 0, 2));
-                this.shapes.square.draw(context, program_state, model_transform, this.materials.tutorial_box);
-
-                // add text to box
-                model_transform = Mat4.identity();
-                model_transform = model_transform.times(Mat4.scale(0.5, 0.5, 1));
-                model_transform = model_transform.times(Mat4.translation(0, 0, 5));
-                this.shapes.text.set_string("Welcome to Oceans 14!", context.context);
-                this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
-            }
+                this.tutorial_step_0(context, program_state, model_transform);
+            if (this.tutorial_steps === 1)
+                this.tutorial_step_1(context, program_state, model_transform);
+            if (this.tutorial_steps === 2)
+                this.tutorial_step_2(context, program_state, model_transform);
+            if (this.tutorial_steps === 3)
+                this.tutorial_step_3(context, program_state, model_transform);
+            if (this.tutorial_steps === 4)
+                this.tutorial_step_4(context, program_state, model_transform);
+            if (this.tutorial_steps === 5)
+                this.tutorial_step_5(context, program_state, model_transform);
 
         }
         else // pre-game screen
