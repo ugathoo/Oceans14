@@ -114,6 +114,10 @@ export class Oceans14 extends Scene {
             //     ambient: 0.9, diffusivity: 1, specularity: 0,
             //     texture: new Texture("examples/assets/metallic2.png")
             // }),
+            tutorial_box: new Material(new Textured_Phong(), {
+                ambient: 1, diffusivity: 0, specularity: 0,
+                texture: new Texture("examples/assets/concrete_block.png")
+            }),
         }
 
         // original camera location
@@ -126,6 +130,8 @@ export class Oceans14 extends Scene {
         this.medium = false;
         this.hard = false;
 
+        this.tutorial = false;
+        this.tutorial_steps = 0; // incremented from 0-5 for tutorial
 
         this.drone_model_transform = Mat4.identity();
 
@@ -231,8 +237,10 @@ export class Oceans14 extends Scene {
     }//.times(Mat4.rotation(-135,0,0,1))
 
 
-    draw_laser(context, program_state, model_transform, t, rotating, around, location, left) // make it so that laser can't go super high up
+    draw_laser(context, program_state, model_transform, t, rotating, around, location, left, tutorial) // make it so that laser can't go super high up
     {
+        let laser_rot = 0;
+        let back = 0;
         const gray = hex_color("#808080");
         let translation_times = -1;
         if (left === false) {
@@ -240,19 +248,20 @@ export class Oceans14 extends Scene {
         }
         if (rotating === true) {
             // translate and draw laser
-            let laser_rot = 0;
             if (left === true)
                 laser_rot = Math.sin(t / 2) - Math.PI/3.1;
             else
                 laser_rot = Math.sin(t / 2) + Math.PI/3.1;
             if (around === true && left === true) {
-                laser_rot = Math.sin(t / 2)/4 - Math.PI/13;
+                //laser_rot = Math.sin(t / 2)/4 - Math.PI/13;
+                laser_rot = Math.sin(t/1.2) - Math.PI/3.1;
             }
             if (around === true && left === false) {
-                laser_rot = Math.sin(t / 2)/4 + Math.PI/13;
+                //laser_rot = Math.sin(t / 2)/4 + Math.PI/13;
+                laser_rot = Math.sin(t/1.2) + Math.PI/3.1;
             }
             // draw rotating laser
-            model_transform = model_transform.times(Mat4.translation(0, location, 0));
+            model_transform = model_transform.times(Mat4.translation(0, location, back));
             model_transform = model_transform.times(Mat4.translation(translation_times * 21.5, 0, 0));
             model_transform = model_transform.times(Mat4.rotation(laser_rot, 0, 0, 1));
             model_transform = model_transform.times(Mat4.translation(translation_times * -21.5, 0, 0));
@@ -261,7 +270,7 @@ export class Oceans14 extends Scene {
         }
         else {
             // draw flashing laser
-            model_transform = model_transform.times(Mat4.translation(0, location, 0));
+            model_transform = model_transform.times(Mat4.translation(0, location, back));
             model_transform = model_transform.times(Mat4.translation(translation_times*21.5, 0, 0));
             model_transform = model_transform.times(Mat4.translation(translation_times*-21.5, 0, 0));
             if (Math.ceil(t) % 2 === 0)
@@ -271,16 +280,18 @@ export class Oceans14 extends Scene {
         }
 
         // box for laser
-        model_transform = model_transform.times(Mat4.translation(translation_times*21.6, location, 0));
+        model_transform = model_transform.times(Mat4.translation(translation_times*21.6, location, back));
         model_transform = model_transform.times(Mat4.scale(0.5, 0.3, 0.3));
         this.shapes.laser_box_2.draw(context, program_state, model_transform, this.materials.test.override({color: gray}));
        // this.shapes.laser_box_2.draw(context, program_state, model_transform, this.materials.test.override({color: gray}));
         model_transform = Mat4.identity();
 
-        model_transform = model_transform.times(Mat4.translation(translation_times*21.6, location, -1));
+        model_transform = model_transform.times(Mat4.translation(translation_times*21.6, location, -1 + back));
         model_transform = model_transform.times(Mat4.scale(0.6, 0.6, 0.6));
         this.shapes.cube.draw(context, program_state, model_transform, this.materials.test.override({color: gray}));
         model_transform = Mat4.identity();
+
+        return laser_rot;
     }
 
 
@@ -291,6 +302,7 @@ export class Oceans14 extends Scene {
         this.key_triggered_button("Start Game", ["r"], () => {
             if (this.game_started === false)
                 this.game_started = true;
+            this.tutorial = false;
         });
         this.key_triggered_button("Easy Mode", ["e"], () => {
             this.medium = false;
@@ -316,6 +328,15 @@ export class Oceans14 extends Scene {
         });
         this.key_triggered_button("Move Down", ["s"], () => {
             this.drone_model_transform = this.drone_model_transform.times(Mat4.translation(0, -1, 0));
+        });
+        this.key_triggered_button("Start/End tutorial", ["t"], () => {
+            this.tutorial = !this.tutorial;
+            this.tutorial_steps = 0;
+            this.game_started = false;
+            this.drone_model_transform = Mat4.identity(); // reset drone to og location in case tutorial was pulled up mid game
+        });
+        this.key_triggered_button("Next", ["n"], () => {
+            this.tutorial_steps = this.tutorial_steps + 1;
         });
     }
 
@@ -358,11 +379,51 @@ export class Oceans14 extends Scene {
 
             model_transform = Mat4.identity();
             // draw the 3 lasers at random locations on screen
-            this.draw_laser(context, program_state, model_transform, t, true, true, this.circle_laser_location, this.circle_laser_side);
+            this.draw_laser(context, program_state, model_transform, t, true, true, this.circle_laser_location, this.circle_laser_side, false);
             if (this.medium === true || this.hard === true)
-                this.draw_laser(context, program_state, model_transform, t, true, false, this.rot_laser_location, this.rot_laser_side);
+                this.draw_laser(context, program_state, model_transform, t, true, false, this.rot_laser_location, this.rot_laser_side, false);
             if (this.hard === true)
-                this.draw_laser(context, program_state, model_transform, t, false, false, this.flash_laser_location, this.flash_laser_side);
+                this.draw_laser(context, program_state, model_transform, t, false, false, this.flash_laser_location, this.flash_laser_side, false);
+
+        }
+        else if (this.tutorial === true)
+        {
+            // setup board like above
+            program_state.set_camera(Mat4.identity().times(Mat4.translation(0, 0, -30)));
+
+            model_transform = Mat4.identity();
+            let pedestal = model_transform.times(Mat4.translation(0,-12,0));
+            this.shapes.cube.draw(context,program_state,pedestal,this.materials.test);
+            model_transform = Mat4.identity();
+            this.draw_jewel(context,program_state,model_transform,t);
+            //let drone_trans = model_transform;
+            this.draw_drone(context, program_state, this.drone_model_transform, t);
+
+
+            model_transform = Mat4.identity();
+            // draw the 3 lasers at random locations on screen
+            this.draw_laser(context, program_state, model_transform, t, true, true, this.circle_laser_location, this.circle_laser_side, true);
+            if (this.medium === true || this.hard === true)
+                this.draw_laser(context, program_state, model_transform, t, true, false, this.rot_laser_location, this.rot_laser_side, true);
+            if (this.hard === true)
+                this.draw_laser(context, program_state, model_transform, t, false, false, this.flash_laser_location, this.flash_laser_side, true);
+
+            model_transform = Mat4.identity();
+            // add in tutorial steps!
+            if (this.tutorial_steps === 0)
+            {
+                // create box
+                model_transform = model_transform.times(Mat4.scale(6, 6, 6));
+                model_transform = model_transform.times(Mat4.translation(0, 0, 2));
+                this.shapes.square.draw(context, program_state, model_transform, this.materials.tutorial_box);
+
+                // add text to box
+                model_transform = Mat4.identity();
+                model_transform = model_transform.times(Mat4.scale(0.5, 0.5, 1));
+                model_transform = model_transform.times(Mat4.translation(0, 0, 5));
+                this.shapes.text.set_string("Welcome to Oceans 14!", context.context);
+                this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+            }
 
         }
         else // pre-game screen
