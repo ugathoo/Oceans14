@@ -135,6 +135,11 @@ export class Oceans14 extends Scene {
 
         this.drone_model_transform = Mat4.identity();
 
+        this.laserArrayEasy = [];
+        this.laserArrayMed = [];
+        this.laserArrayHard = [];
+        this.win = false;
+        this.lose = false;
 
         // get random values for lasers
         // random value between 8 and -8 for y-axis location of laser box/laser -> but make sure they are at least 4 units away from each other
@@ -228,11 +233,9 @@ export class Oceans14 extends Scene {
     }
 
 
-    draw_jewel(context, program_state, model_transform, t){
+    draw_jewel(context, program_state, gem_transform,gem2_transform){
         const red = hex_color('#FF0000');
-        let gem_transform = model_transform.times(Mat4.translation(0,-9.3,0)).times(Mat4.scale(0.5,0.5,0.5)).times(Mat4.rotation(t,0,1,0));
         this.shapes.gem_half1.draw(context,program_state,gem_transform,this.materials.test.override({color:red}));
-        let gem2_transform = model_transform.times(Mat4.translation(0,-9.3,0)).times(Mat4.scale(0.5,0.5,0.5)).times(Mat4.rotation(t,0,1,0));
         this.shapes.gem_half2.draw(context,program_state,gem2_transform,this.materials.test.override({color:red}));
     }//.times(Mat4.rotation(-135,0,0,1))
 
@@ -475,6 +478,37 @@ export class Oceans14 extends Scene {
         this.shapes.text.set_string("press r or t", context.context);
         this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
         model_transform = Mat4.identity();
+
+    }
+    check_collision_jewel(gem_transform, gem2_transform, drone_transform){
+        //**** DISTANCE MEASURED IN PIXELS ---> HOW WIDE ARE THE JEWEL AND DRONE???? *********//
+
+        //Get Drone coords
+        let droneX = drone_transform[0][2][0];
+        let droneY = drone_transform[0][2][1];
+        let droneZ = drone_transform[0][2][2];
+
+        //set jewel boundaries
+        let gemTop = gem_transform[0][2][0] + 0.5;
+        let gemBottom = gem2_transform[0][2][0] - 0.5;
+        let gemLeft = Math.sqrt(((gem_transform[0][2][0])**2) + ((gem_transform[0][2][1] - 0.25)**2));
+        let gemRight = Math.sqrt(((gem_transform[0][2][0])**2) + ((gem_transform[0][2][1] + 0.25)**2));
+
+        //top intersection
+        if(((droneY-1) <= gemTop) && ((((droneX+1) - 0.25) <= 0.75)||((Math.abs((droneX-1) + 0.25)) <= 0.75))){
+           return true;
+        }
+        //left intersection
+        else if((droneX+1) >= gemLeft){
+            return true;
+        }
+        //right intersection
+        else if((droneX - 1) <= gemRight) {
+            return true;
+        }
+        //bottom intersection
+        else return ((droneY + 1) >= gemBottom) && ((((droneX + 1) - 0.25) <= 0.75) || ((Math.abs((droneX - 1) + 0.25)) <= 0.75));
+
     }
 
 
@@ -523,6 +557,10 @@ export class Oceans14 extends Scene {
         });
     }
 
+    check_collision_laser(context, program_state, drone, laserArray){
+
+    }
+
     display(context, program_state) {
         if (!context.scratchpad.controls) {
             this.children.push(context.scratchpad.controls = new defs.Movement_Controls());
@@ -536,29 +574,30 @@ export class Oceans14 extends Scene {
         // // The parameters of the Light are: position, color, size
         program_state.lights = [new Light(light_position, color(1, 1, 1, 1), 1000)];
 
-
         const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
         let model_transform = Mat4.identity();
-
-
 
         // draw background
         model_transform = model_transform.times(Mat4.scale(450, 450, 450));
         model_transform = model_transform.times(Mat4.translation(0, 0, -1.2));
         this.shapes.square.draw(context, program_state, model_transform, this.materials.texture);
-        model_transform = Mat4.identity();
 
         if (this.game_started) {
             program_state.set_camera(Mat4.identity().times(Mat4.translation(0, 0, -30)));
 
             model_transform = Mat4.identity();
+            let gem_transform = model_transform.times(Mat4.translation(0,-9.3,0)).times(Mat4.scale(0.5,0.5,0.5)).times(Mat4.rotation(t,0,1,0));
+            let gem2_transform = model_transform.times(Mat4.translation(0,-9.3,0)).times(Mat4.scale(0.5,0.5,0.5)).times(Mat4.rotation(t,0,1,0));
+
+            this.win = this.check_collision_jewel(gem_transform,gem2_transform,this.drone_model_transform);
+            if(this.win)
+                console.log("win!!");
             let pedestal = model_transform.times(Mat4.translation(0,-12,0));
             this.shapes.cube.draw(context,program_state,pedestal,this.materials.test);
             model_transform = Mat4.identity();
-            this.draw_jewel(context,program_state,model_transform,t);
+           this.draw_jewel(context,program_state,gem_transform,gem2_transform);
             //let drone_trans = model_transform;
             this.draw_drone(context, program_state, this.drone_model_transform, t);
-
 
             model_transform = Mat4.identity();
             // draw the 3 lasers at random locations on screen
@@ -615,7 +654,7 @@ export class Oceans14 extends Scene {
             model_transform = model_transform.times(Mat4.translation(-6, 0, -1.1));
 
            //
-            this.shapes.text.set_string("Oceans 14", context.context);
+            this.shapes.text.set_string("Ocean's 14", context.context);
            this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
            // this.shapes.square.draw(context, program_state, model_transform.times(Mat4.scale(2, 2, .50)), this.materials.credit_square);
 
