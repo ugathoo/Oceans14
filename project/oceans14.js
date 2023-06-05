@@ -330,6 +330,15 @@ export class Oceans14 extends Scene {
         });
     }
 
+    check_coll_flash(t){
+        let dy = Math.abs(this.droneY);
+        let  fly = this.flash_laser_location;
+        return (((Math.ceil(t) % 2 === 0) && ((Math.abs(dy - fly) < 1) || (Math.abs(fly - dy) < 1))));
+    }
+    check_coll_rot(){
+
+    }
+
     check_coll_jewel(){
         let dx = Math.abs(this.droneX);
         let dy = Math.abs(this.droneY);
@@ -339,7 +348,7 @@ export class Oceans14 extends Scene {
         if((Math.abs(dy - gy) <= 1.5) && (Math.abs(dx - gx) <= 1)){
             return true;
         }
-        else return ((Math.abs(dx - gx) <= 5.5) && (Math.abs(gy-dy) <= 1));
+        else return ((Math.abs(dx - gx) <= 4.5) && (Math.abs(gy-dy) <= 1));
     }
 
     display(context, program_state) {
@@ -359,8 +368,6 @@ export class Oceans14 extends Scene {
         const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
         let model_transform = Mat4.identity();
 
-
-
         // draw background
         model_transform = model_transform.times(Mat4.scale(450, 450, 450));
         model_transform = model_transform.times(Mat4.translation(0, 0, -1.2));
@@ -370,9 +377,14 @@ export class Oceans14 extends Scene {
         if (this.game_started) {
             model_transform = Mat4.identity();
             this.win = this.check_coll_jewel();
+            this.lose = this.check_coll_flash(t);
             if(this.win){
                 this.shapes.cube.draw(context,program_state,model_transform,this.materials.test);
-            }else {
+            }
+            else if(this.lose){
+                this.shapes.cube.draw(context,program_state,model_transform,this.materials.test.override({color: hex_color('#b734eb')}));
+            }
+            else {
                 program_state.set_camera(Mat4.identity().times(Mat4.translation(0, 0, -30)));
 
                 model_transform = Mat4.identity();
