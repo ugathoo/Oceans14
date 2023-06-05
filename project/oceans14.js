@@ -121,11 +121,14 @@ export class Oceans14 extends Scene {
         this.medium = false;
         this.hard = false;
 
+        //flags for game
+        this.win = false;
+        this.lose = false;
 
         this.drone_model_transform = Mat4.identity();
         //drone coords
-        this.droneX = 0;
-        this.droneY = 0;
+        this.droneX = -17;
+        this.droneY = 10;
 
         //jewel coords
         this.gemx = 0;
@@ -327,6 +330,18 @@ export class Oceans14 extends Scene {
         });
     }
 
+    check_coll_jewel(){
+        let dx = Math.abs(this.droneX);
+        let dy = Math.abs(this.droneY);
+        let gx = Math.abs(this.gemx);
+        let gy = Math.abs(this.gemy);
+
+        if((Math.abs(dy - gy) <= 1.5) && (Math.abs(dx - gx) <= 1)){
+            return true;
+        }
+        else return ((Math.abs(dx - gx) <= 5.5) && (Math.abs(gy-dy) <= 1));
+    }
+
     display(context, program_state) {
         if (!context.scratchpad.controls) {
             this.children.push(context.scratchpad.controls = new defs.Movement_Controls());
@@ -353,25 +368,30 @@ export class Oceans14 extends Scene {
         model_transform = Mat4.identity();
 
         if (this.game_started) {
-            program_state.set_camera(Mat4.identity().times(Mat4.translation(0, 0, -30)));
-
             model_transform = Mat4.identity();
-            let pedestal = model_transform.times(Mat4.translation(0,-12,0));
-            this.shapes.cube.draw(context,program_state,pedestal,this.materials.test);
-            model_transform = Mat4.identity();
-            this.draw_jewel(context,program_state,model_transform,t);
-            //let drone_trans = model_transform;
-            this.draw_drone(context, program_state, this.drone_model_transform,this.droneX,this.droneY, t);
+            this.win = this.check_coll_jewel();
+            if(this.win){
+                this.shapes.cube.draw(context,program_state,model_transform,this.materials.test);
+            }else {
+                program_state.set_camera(Mat4.identity().times(Mat4.translation(0, 0, -30)));
+
+                model_transform = Mat4.identity();
+                let pedestal = model_transform.times(Mat4.translation(0, -12, 0));
+                this.shapes.cube.draw(context, program_state, pedestal, this.materials.test);
+                model_transform = Mat4.identity();
+                this.draw_jewel(context, program_state, model_transform, t);
+                //let drone_trans = model_transform;
+                this.draw_drone(context, program_state, this.drone_model_transform, this.droneX, this.droneY, t);
 
 
-            model_transform = Mat4.identity();
-            // draw the 3 lasers at random locations on screen
-            this.draw_laser(context, program_state, model_transform, t, true, true, this.circle_laser_location, this.circle_laser_side);
-            if (this.medium === true || this.hard === true)
-                this.draw_laser(context, program_state, model_transform, t, true, false, this.rot_laser_location, this.rot_laser_side);
-            if (this.hard === true)
-                this.draw_laser(context, program_state, model_transform, t, false, false, this.flash_laser_location, this.flash_laser_side);
-
+                model_transform = Mat4.identity();
+                // draw the 3 lasers at random locations on screen
+                this.draw_laser(context, program_state, model_transform, t, true, true, this.circle_laser_location, this.circle_laser_side);
+                if (this.medium === true || this.hard === true)
+                    this.draw_laser(context, program_state, model_transform, t, true, false, this.rot_laser_location, this.rot_laser_side);
+                if (this.hard === true)
+                    this.draw_laser(context, program_state, model_transform, t, false, false, this.flash_laser_location, this.flash_laser_side);
+            }
         }
         else // pre-game screen
         {
