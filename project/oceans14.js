@@ -343,7 +343,7 @@ export class Oceans14 extends Scene {
         let  fly = this.flash_laser_location;
         return (this.hard && (((Math.ceil(t) % 2 === 0) && ((Math.abs(dy - fly) < 1) || (Math.abs(fly - dy) < 1)))));
     }
-    check_coll_rot_slow(mode, theta){
+    check_coll_rot_slow(theta){
         let dy = this.droneY;
         let dx = this.droneX;
 
@@ -352,14 +352,33 @@ export class Oceans14 extends Scene {
 
         let y = ly - dy;
         let x = lx - dx;
-        let h = ((x * Math.tan(theta) - y) * Math.cos(theta));
+        let h = (Math.abs((x * Math.tan(theta) - y)) * Math.cos(theta));
+        if(dx === 0){
+            if (theta === 0){
+                return ((Math.abs(dy - ly) < 1) || (Math.abs(ly - dy) < 1));
+            }
+        }
+        if(!this.circle_laser_location){
+            x = dx - lx;
+            if(Math.tan(theta) === (y/x)){
+                return false;
+            }
+        }else{
+            if(Math.tan(theta) === (-y/x)){
+                return false;
+            }
+
+        }
+        if(((Math.abs(dx) - 1) <= 1) && ((Math.abs(dy) - 1) <= 1)){
+            return ((Math.abs(dy - ly) < 1) || (Math.abs(ly - dy) < 1));
+        }
         if (!this.circle_laser_location) {
             x = dx - lx;
-            h = (((-x) * Math.tan(theta) - y) * Math.cos(theta));
+            h = (Math.abs((-x) * Math.tan(theta) - y) * Math.cos(theta));
         }
 
 
-        return ((mode) && (h <= 1));
+        return ((h <= 1));
     }
 
     check_coll_jewel(){
@@ -418,7 +437,7 @@ export class Oceans14 extends Scene {
                 //let drone_trans = model_transform;
                 this.draw_drone(context, program_state, this.drone_model_transform, this.droneX, this.droneY, t);
 
-                this.lose = this.check_coll_flash(t) || this.check_coll_rot_slow(true,this.slow_angle);
+                this.lose = this.check_coll_flash(t) || this.check_coll_rot_slow(this.slow_angle);
 
                 model_transform = Mat4.identity();
                 // draw the 3 lasers at random locations on screen
