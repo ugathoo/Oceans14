@@ -134,6 +134,10 @@ export class Oceans14 extends Scene {
         this.gemx = 0;
         this.gemy = -9.3;
 
+        //current laser angles
+        this.slow_angle = 0;
+        this.fast_angle = 0;
+
         // get random values for lasers
         // random value between 8 and -8 for y-axis location of laser box/laser -> but make sure they are at least 4 units away from each other
         let random_amount = Math.random();
@@ -259,6 +263,10 @@ export class Oceans14 extends Scene {
             if (around === true && left === false) {
                 laser_rot = Math.sin(t / 2)/4 + Math.PI/13;
             }
+            if (around === true)
+                this.slow_angle = laser_rot;
+            else
+                this.fast_angle = laser_rot;
             // draw rotating laser
             model_transform = model_transform.times(Mat4.translation(0, location, 0));
             model_transform = model_transform.times(Mat4.translation(translation_times * 21.5, 0, 0));
