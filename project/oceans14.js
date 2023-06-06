@@ -141,23 +141,23 @@ export class Oceans14 extends Scene {
         // get random values for lasers
         // random value between 8 and -8 for y-axis location of laser box/laser -> but make sure they are at least 4 units away from each other
         let random_amount = Math.random();
-        this.circle_laser_location = (-8. * random_amount) + (8. * (1. - random_amount));
+        this.circle_laser_location = (-8. * random_amount) + (0. * (1. - random_amount));
 
         random_amount = Math.random();
-        let linear_combo = (-8. * random_amount) + (8. * (1. - random_amount));
+        let linear_combo = (-8. * random_amount) + (0. * (1. - random_amount));
         while (Math.abs(linear_combo - this.circle_laser_location) < 4.)
         {
             random_amount = Math.random();
-            linear_combo = (-8. * random_amount) + (8. * (1. - random_amount));
+            linear_combo = (-8. * random_amount) + (0. * (1. - random_amount));
         }
         this.rot_laser_location = linear_combo;
 
         random_amount = Math.random();
-        linear_combo = (-8. * random_amount) + (8. * (1. - random_amount));
+        linear_combo = (0. * random_amount) + (8. * (1. - random_amount));
         while (Math.abs(linear_combo - this.circle_laser_location) < 4. || Math.abs(linear_combo - this.rot_laser_location) < 4.)
         {
             random_amount = Math.random();
-            linear_combo = (-8. * random_amount) + (8. * (1. - random_amount));
+            linear_combo = (0. * random_amount) + (8. * (1. - random_amount));
         }
         this.flash_laser_location = linear_combo;
 
