@@ -345,22 +345,28 @@ export class Oceans14 extends Scene {
     }
     check_coll_rot_slow(mode, theta){
         let dy = this.droneY;
-        let dx = Math.abs(this.droneX);
+        let dx = this.droneX;
 
-        let lx = 21.5;
+        let lx = this.circle_laser_side * 21.5;
         let ly = this.circle_laser_location;
 
-        let x = dx - lx;
-        let y = dy - ly;
+        let y = ly - dy;
+        let x = lx - dx;
+        let h = ((x * Math.tan(theta) - y) * Math.cos(theta));
+        if (!this.circle_laser_location) {
+            x = dx - lx;
+            h = (((-x) * Math.tan(theta) - y) * Math.cos(theta));
+        }
 
-        return (mode) && (((x * Math.tan(theta) - y) * Math.cos(theta)) <= 1);
+
+        return ((mode) && (h <= 1));
     }
 
     check_coll_jewel(){
-        let dx = Math.abs(this.droneX);
-        let dy = Math.abs(this.droneY);
-        let gx = Math.abs(this.gemx);
-        let gy = Math.abs(this.gemy);
+        let dx = (this.droneX);
+        let dy = (this.droneY);
+        let gx = (this.gemx);
+        let gy = (this.gemy);
 
         if((Math.abs(dy - gy) <= 1.5) && (Math.abs(dx - gx) <= 1)){
             return true;
@@ -412,7 +418,8 @@ export class Oceans14 extends Scene {
                 //let drone_trans = model_transform;
                 this.draw_drone(context, program_state, this.drone_model_transform, this.droneX, this.droneY, t);
 
-                //this.lose = this.check_coll_flash(t) || this.check_coll_rot_slow(this.easy,  );
+                this.lose = this.check_coll_flash(t) || this.check_coll_rot_slow(true,this.slow_angle);
+
                 model_transform = Mat4.identity();
                 // draw the 3 lasers at random locations on screen
                 this.draw_laser(context, program_state, model_transform, t, true, true, this.circle_laser_location, this.circle_laser_side);
