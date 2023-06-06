@@ -333,10 +333,19 @@ export class Oceans14 extends Scene {
     check_coll_flash(t){
         let dy = Math.abs(this.droneY);
         let  fly = this.flash_laser_location;
-        return (((Math.ceil(t) % 2 === 0) && ((Math.abs(dy - fly) < 1) || (Math.abs(fly - dy) < 1))));
+        return (this.hard && (((Math.ceil(t) % 2 === 0) && ((Math.abs(dy - fly) < 1) || (Math.abs(fly - dy) < 1)))));
     }
-    check_coll_rot(){
+    check_coll_rot_slow(mode, theta){
+        let dy = this.droneY;
+        let dx = Math.abs(this.droneX);
 
+        let lx = 21.5;
+        let ly = this.circle_laser_location;
+
+        let x = dx - lx;
+        let y = dy - ly;
+
+        return (mode) && (((x * Math.tan(theta) - y) * Math.cos(theta)) <= 1);
     }
 
     check_coll_jewel(){
@@ -377,7 +386,7 @@ export class Oceans14 extends Scene {
         if (this.game_started) {
             model_transform = Mat4.identity();
             this.win = this.check_coll_jewel();
-            this.lose = this.check_coll_flash(t);
+
             if(this.win){
                 this.shapes.cube.draw(context,program_state,model_transform,this.materials.test);
             }
@@ -395,7 +404,7 @@ export class Oceans14 extends Scene {
                 //let drone_trans = model_transform;
                 this.draw_drone(context, program_state, this.drone_model_transform, this.droneX, this.droneY, t);
 
-
+                //this.lose = this.check_coll_flash(t) || this.check_coll_rot_slow(this.easy,  );
                 model_transform = Mat4.identity();
                 // draw the 3 lasers at random locations on screen
                 this.draw_laser(context, program_state, model_transform, t, true, true, this.circle_laser_location, this.circle_laser_side);
