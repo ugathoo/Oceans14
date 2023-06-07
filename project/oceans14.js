@@ -303,7 +303,7 @@ export class Oceans14 extends Scene {
 
     //
     make_control_panel() {
-        this.key_triggered_button("Start Game", ["r"], () => {
+        this.key_triggered_button("Start Game", ["g"], () => {
             if (this.game_started === false)
                 this.game_started = true;
         });
@@ -463,7 +463,7 @@ export class Oceans14 extends Scene {
             model_transform = Mat4.identity();
             model_transform = model_transform.times(Mat4.scale(0.7, 0.7, 1));
             model_transform = model_transform.times(Mat4.translation(-30, -12.5, -1.1));
-            this.shapes.text.set_string("Press r to begin", context.context);
+            this.shapes.text.set_string("Press g to begin", context.context);
             this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
 
             model_transform = Mat4.identity();
