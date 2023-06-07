@@ -346,14 +346,22 @@ export class Oceans14 extends Scene {
     check_coll_rot_slow(theta){
         let dy = this.droneY;
         let dx = this.droneX;
+        let lx = 21.5;
+        if(this.circle_laser_side){
+            lx = -21.5;
+        }
 
-        let lx = this.circle_laser_side * 22;
         let ly = this.circle_laser_location;
 
-        let y = ly - dy;
-        let x = lx - dx;
+        let y = (ly - dy);
+        let x = (lx - dx);
         let h = ((x*Math.sin(theta)) - (y*Math.cos(theta)));
-        if((dy - 1) > ly){
+        if (!this.circle_laser_side) {
+            x = dx - lx;
+            h = ((-x * Math.sin(theta)) - (y * Math.cos(theta)));
+        }
+
+        if(dy === ly || (dy - 1) === ly || (dy + 1) === ly || x === y){
             return false;
         }else {
             //middle screen bug
@@ -361,38 +369,30 @@ export class Oceans14 extends Scene {
                 if (theta === 0) {
                     return ((Math.abs(dy - ly) < 1) || (Math.abs(ly - dy) < 1));
                 }
-            } else
-                //level with laser
-            if (dy === ly  || (dy-1) === ly || (dy + 1) === ly) {
-                return (theta === 0);
-            }
-            else {
-                //y = xtan theta
-                if (!this.circle_laser_location) {
-                    x = dx - lx;
-                    if (Math.tan(theta) === (-y / x)) {
-                        return false;
-                    }
-                } else {
-                    if (Math.tan(theta) === (y / x)) {
-                        return false;
-                    }
+           }
+           else {
+                   //y = xtan theta
+                   if (!this.circle_laser_side) {
+                       x = dx - lx;
+                       if (Math.tan(theta) === (-y / x)) {
+                           return false;
+                       }
+                   } else {
+                       if (Math.tan(theta) === (y / x)) {
+                           return false;
+                       }
 
-                }
+                   }
 
-                //general case
-                if (((Math.abs(dx) - 1) <= 1) && ((Math.abs(dy) - 1) <= 1)) {
-                    return ((Math.abs(dy - ly) < 1) || (Math.abs(ly - dy) < 1));
-                }
-                if (!this.circle_laser_location) {
-                    x = dx - lx;
-                    h = ((-x * Math.sin(theta)) - (y * Math.cos(theta)));
-                }
+                   //general case
+                   if (((Math.abs(dx) - 1) <= 0) && ((Math.abs(dy) - 1) <= 0)) {
+                       return ((Math.abs(dy - ly) < 1) || (Math.abs(ly - dy) < 1));
+                   }
 
 
-                return ((h <= 1));
-            }
-        }
+                   return ((h <= 0));
+               }
+           }
     }
 
     check_coll_jewel(){
@@ -433,6 +433,7 @@ export class Oceans14 extends Scene {
         if (this.game_started) {
             model_transform = Mat4.identity();
             this.win = this.check_coll_jewel();
+            this.lose = (this.check_coll_flash(t)) || (this.check_coll_rot_slow(this.slow_angle));
 
             if(this.win){
                 this.shapes.cube.draw(context,program_state,model_transform,this.materials.test);
@@ -450,8 +451,6 @@ export class Oceans14 extends Scene {
                 this.draw_jewel(context, program_state, model_transform, t);
                 //let drone_trans = model_transform;
                 this.draw_drone(context, program_state, this.drone_model_transform, this.droneX, this.droneY, t);
-
-                this.lose = this.check_coll_flash(t) || this.check_coll_rot_slow(this.slow_angle);
 
                 model_transform = Mat4.identity();
                 // draw the 3 lasers at random locations on screen
