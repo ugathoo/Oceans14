@@ -456,7 +456,7 @@ export class Oceans14 extends Scene {
             model_transform = model_transform.times(Mat4.translation(-6, 0, -1.1));
 
             //
-            this.shapes.text.set_string("Oceans 14", context.context);
+            this.shapes.text.set_string("Ocean's 14", context.context);
             this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
             // this.shapes.square.draw(context, program_state, model_transform.times(Mat4.scale(2, 2, .50)), this.materials.credit_square);
 
