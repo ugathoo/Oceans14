@@ -343,7 +343,7 @@ export class Oceans14 extends Scene {
         let  fly = this.flash_laser_location;
         return (this.hard && (((Math.ceil(t) % 2 === 0) && ((Math.abs(dy - fly) < 1) || (Math.abs(fly - dy) < 1)))));
     }
-    check_coll_rot(theta){
+    check_coll_rot_slow(theta){
         let dy = this.droneY;
         let dx = this.droneX;
         let lx = 21.5;
@@ -395,6 +395,55 @@ export class Oceans14 extends Scene {
            }
     }
 
+    check_coll_rot_fast(theta){
+        let dy = this.droneY;
+        let dx = this.droneX;
+        let lx = 21.5;
+        if(this.rot_laser_side){
+            lx = -21.5;
+        }
+
+        let ly = this.rot_laser_location;
+
+        let y = (ly - dy);
+        let x = (lx - dx);
+        let h = ((x*Math.sin(theta)) - (y*Math.cos(theta)));
+        if (!this.rot_laser_side) {
+            x = dx - lx;
+            h = ((-x * Math.sin(theta)) - (y * Math.cos(theta)));
+        }
+
+        if(dy === ly || (dy - 1) === ly || (dy + 1) === ly || x === y){
+            return false;
+        }else {
+            //middle screen bug
+            if (dx === 0) {
+                if (theta === 0) {
+                    return ((Math.abs(dy - ly) < 1) || (Math.abs(ly - dy) < 1));
+                }
+            }
+            else {
+                //y = xtan theta
+                if (!this.rot_laser_side) {
+                    x = dx - lx;
+                    if (Math.tan(theta) === (-y / x)) {
+                        return false;
+                    }
+                } else {
+                    if (Math.tan(theta) === (y / x)) {
+                        return false;
+                    }
+
+                }
+
+                //general case
+                if (((Math.abs(dx) - 1) <= 0) && ((Math.abs(dy) - 1) <= 0)) {
+                    return ((Math.abs(dy - ly) < 1) || (Math.abs(ly - dy) < 1));
+                }
+                return ((h <= 1));
+            }
+        }
+    }
     check_coll_jewel(){
         let dx = (this.droneX);
         let dy = (this.droneY);
@@ -440,10 +489,11 @@ export class Oceans14 extends Scene {
         if (this.game_started) {
             model_transform = Mat4.identity();
             this.win = this.check_coll_jewel();
-            if(this.medium||this.hard){
-                this.lose = (this.check_coll_flash(t)) || (this.check_coll_rot(this.slow_angle))|| (this.check_coll_rot(this.fast_angle));
+
+            if(this.medium === true ||this.hard === true){
+                this.lose = (this.check_coll_flash(t)) || (this.check_coll_rot_slow(this.slow_angle))|| (this.check_coll_rot_fast(this.fast_angle));
             }else {
-                this.lose = (this.check_coll_flash(t)) || (this.check_coll_rot(this.slow_angle));
+                this.lose = (this.check_coll_flash(t)) || (this.check_coll_rot_slow(this.slow_angle));
             }
 
             if(this.win){
