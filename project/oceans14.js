@@ -343,7 +343,7 @@ export class Oceans14 extends Scene {
         let  fly = this.flash_laser_location;
         return (this.hard && (((Math.ceil(t) % 2 === 0) && ((Math.abs(dy - fly) < 1) || (Math.abs(fly - dy) < 1)))));
     }
-    check_coll_rot_slow(theta){
+    check_coll_rot(theta){
         let dy = this.droneY;
         let dx = this.droneX;
         let lx = 21.5;
@@ -390,7 +390,7 @@ export class Oceans14 extends Scene {
                    }
 
 
-                   return ((h <= 0));
+                   return ((h <= 1));
                }
            }
     }
@@ -407,6 +407,13 @@ export class Oceans14 extends Scene {
         else return ((Math.abs(dx - gx) <= 4.5) && (Math.abs(gy-dy) <= 1));
     }
 
+    win_box(){
+
+    }
+
+    lose_box(){
+
+    }
     display(context, program_state) {
         if (!context.scratchpad.controls) {
             this.children.push(context.scratchpad.controls = new defs.Movement_Controls());
@@ -433,7 +440,11 @@ export class Oceans14 extends Scene {
         if (this.game_started) {
             model_transform = Mat4.identity();
             this.win = this.check_coll_jewel();
-            this.lose = (this.check_coll_flash(t)) || (this.check_coll_rot_slow(this.slow_angle));
+            if(this.medium||this.hard){
+                this.lose = (this.check_coll_flash(t)) || (this.check_coll_rot(this.slow_angle))|| (this.check_coll_rot(this.fast_angle));
+            }else {
+                this.lose = (this.check_coll_flash(t)) || (this.check_coll_rot(this.slow_angle));
+            }
 
             if(this.win){
                 this.shapes.cube.draw(context,program_state,model_transform,this.materials.test);
