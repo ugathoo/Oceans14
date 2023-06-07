@@ -347,38 +347,52 @@ export class Oceans14 extends Scene {
         let dy = this.droneY;
         let dx = this.droneX;
 
-        let lx = this.circle_laser_side * 21.5;
+        let lx = this.circle_laser_side * 22;
         let ly = this.circle_laser_location;
 
         let y = ly - dy;
         let x = lx - dx;
-        let h = (Math.abs((x * Math.tan(theta) - y)) * Math.cos(theta));
-        if(dx === 0){
-            if (theta === 0){
-                return ((Math.abs(dy - ly) < 1) || (Math.abs(ly - dy) < 1));
+        let h = ((x*Math.sin(theta)) - (y*Math.cos(theta)));
+        if((dy - 1) > ly){
+            return false;
+        }else {
+            //middle screen bug
+           if (dx === 0) {
+                if (theta === 0) {
+                    return ((Math.abs(dy - ly) < 1) || (Math.abs(ly - dy) < 1));
+                }
+            } else
+                //level with laser
+            if (dy === ly  || (dy-1) === ly || (dy + 1) === ly) {
+                return (theta === 0);
+            }
+            else {
+                //y = xtan theta
+                if (!this.circle_laser_location) {
+                    x = dx - lx;
+                    if (Math.tan(theta) === (-y / x)) {
+                        return false;
+                    }
+                } else {
+                    if (Math.tan(theta) === (y / x)) {
+                        return false;
+                    }
+
+                }
+
+                //general case
+                if (((Math.abs(dx) - 1) <= 1) && ((Math.abs(dy) - 1) <= 1)) {
+                    return ((Math.abs(dy - ly) < 1) || (Math.abs(ly - dy) < 1));
+                }
+                if (!this.circle_laser_location) {
+                    x = dx - lx;
+                    h = ((-x * Math.sin(theta)) - (y * Math.cos(theta)));
+                }
+
+
+                return ((h <= 1));
             }
         }
-        if(!this.circle_laser_location){
-            x = dx - lx;
-            if(Math.tan(theta) === (y/x)){
-                return false;
-            }
-        }else{
-            if(Math.tan(theta) === (-y/x)){
-                return false;
-            }
-
-        }
-        if(((Math.abs(dx) - 1) <= 1) && ((Math.abs(dy) - 1) <= 1)){
-            return ((Math.abs(dy - ly) < 1) || (Math.abs(ly - dy) < 1));
-        }
-        if (!this.circle_laser_location) {
-            x = dx - lx;
-            h = (Math.abs((-x) * Math.tan(theta) - y) * Math.cos(theta));
-        }
-
-
-        return ((h <= 1));
     }
 
     check_coll_jewel(){
