@@ -109,6 +109,10 @@ export class Oceans14 extends Scene {
                 ambient: 1, diffusivity: 0, specularity: 0,
                 texture: new Texture("examples/assets/text.png")
             }),
+            tutorial_box: new Material(new Textured_Phong(), {
+                ambient: 1, diffusivity: 0, specularity: 0,
+                texture: new Texture("examples/assets/Blue_Big_Tile.png")
+            }),
         }
 
         // original camera location
@@ -298,9 +302,6 @@ export class Oceans14 extends Scene {
         model_transform = Mat4.identity();
     }
 
-
-
-
     //
     make_control_panel() {
         this.key_triggered_button("Start Game", ["g"], () => {
@@ -413,7 +414,7 @@ export class Oceans14 extends Scene {
             h = ((-x * Math.sin(theta)) - (y * Math.cos(theta)));
         }
 
-        if(dy === ly || (dy - 1) === ly || (dy + 1) === ly || x === y){
+        if(dy === ly || (dy - 1) === ly || (dy + 1) === ly || x === y || ((dx ===0) && (dy === 0))){
             return false;
         }else {
             //middle screen bug
@@ -444,6 +445,7 @@ export class Oceans14 extends Scene {
             }
         }
     }
+
     check_coll_jewel(){
         let dx = (this.droneX);
         let dy = (this.droneY);
@@ -456,12 +458,62 @@ export class Oceans14 extends Scene {
         else return ((Math.abs(dx - gx) <= 4.5) && (Math.abs(gy-dy) <= 1));
     }
 
-    win_box(){
-
+    win_box(context, program_state){
+        let model_transform = Mat4.identity();
+        // create box
+        model_transform = model_transform.times(Mat4.scale(9, 9, 9));
+        this.shapes.square.draw(context, program_state, model_transform, this.materials.tutorial_box);
+        // add text to box
+        model_transform = Mat4.identity();
+        model_transform = model_transform.times(Mat4.scale(0.5, 0.5, 1));
+        model_transform = model_transform.times(Mat4.translation(-5, 7.7, 5));
+        this.shapes.text.set_string("You Win!", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.translation(-5, -4, 0));
+        this.shapes.text.set_string("Congratulations", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        //model_transform = model_transform.times(Mat4.scale(0.8, 0.8, 1));
+        model_transform = model_transform.times(Mat4.translation(5.2, -2, 0));
+        this.shapes.text.set_string("on your", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.translation(-6.8, -2.5, 0));
+        this.shapes.text.set_string("successful heist!", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.translation(0.7, -4, 0));
+        this.shapes.text.set_string("Refresh the page", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.translation(2.5, -2.5, 0));
+        this.shapes.text.set_string("to play again.", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
     }
 
-    lose_box(){
-
+    lose_box(context, program_state){
+        let model_transform = Mat4.identity();
+        // create box
+        model_transform = model_transform.times(Mat4.scale(9, 9, 9));
+        this.shapes.square.draw(context, program_state, model_transform, this.materials.tutorial_box);
+        // add text to box
+        model_transform = Mat4.identity();
+        model_transform = model_transform.times(Mat4.scale(0.5, 0.5, 1));
+        model_transform = model_transform.times(Mat4.translation(-7, 7.7, 5));
+        this.shapes.text.set_string("You Lose :(", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.translation(-1.5, -4, 0));
+        this.shapes.text.set_string("You failed to", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        //model_transform = model_transform.times(Mat4.scale(0.8, 0.8, 1));
+        model_transform = model_transform.times(Mat4.translation(2.7, -2.3, 0));
+        this.shapes.text.set_string("steal the", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.translation(3.5, -2.5, 0));
+        this.shapes.text.set_string("gem.", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.translation(-8.5, -4, 0));
+        this.shapes.text.set_string("Refresh the page", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
+        model_transform = model_transform.times(Mat4.translation(2.5, -2.5, 0));
+        this.shapes.text.set_string("to play again.", context.context);
+        this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
     }
     display(context, program_state) {
         if (!context.scratchpad.controls) {
@@ -497,10 +549,12 @@ export class Oceans14 extends Scene {
             }
 
             if(this.win){
-                this.shapes.cube.draw(context,program_state,model_transform,this.materials.test);
+                this.win_box(context,program_state);
+                //this.shapes.cube.draw(context,program_state,model_transform,this.materials.test);
             }
             else if(this.lose){
-                this.shapes.cube.draw(context,program_state,model_transform,this.materials.test.override({color: hex_color('#b734eb')}));
+                this.lose_box(context,program_state);
+                //this.shapes.cube.draw(context,program_state,model_transform,this.materials.test.override({color: hex_color('#b734eb')}));
             }
             else {
                 program_state.set_camera(Mat4.identity().times(Mat4.translation(0, 0, -30)));
