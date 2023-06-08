@@ -660,6 +660,9 @@ export class Oceans14 extends Scene {
         return (this.hard && (((Math.ceil(t) % 4 <= 1) && ((Math.abs(dy - fly) < 1) || (Math.abs(fly - dy) < 1)))));
     }
     check_coll_rot_slow(theta){
+        if(this.droneY === 10){
+            return false;
+        }
         let dy = this.droneY;
         let dx = this.droneX;
         let lx = 21.5;
@@ -712,6 +715,9 @@ export class Oceans14 extends Scene {
     }
 
     check_coll_rot_fast(theta){
+        if(this.droneY === 10){
+            return false;
+        }
         let dy = this.droneY;
         let dx = this.droneX;
         let lx = 21.5;
