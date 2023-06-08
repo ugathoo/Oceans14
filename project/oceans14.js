@@ -652,7 +652,10 @@ export class Oceans14 extends Scene {
     }
 
     check_coll_flash(t){
-        let dy = Math.abs(this.droneY);
+        if(this.droneY === 10){
+            return false;
+        }
+        let dy = (this.droneY);
         let  fly = this.flash_laser_location;
         return (this.hard && (((Math.ceil(t) % 4 <= 1) && ((Math.abs(dy - fly) < 1) || (Math.abs(fly - dy) < 1)))));
     }
