@@ -592,6 +592,8 @@ export class Oceans14 extends Scene {
             if (this.game_started === false)
                 this.game_started = true;
             this.tutorial = false;
+            this.win = false;
+            this.lose = false;
         });
         this.key_triggered_button("Return Home", ["b"], () => {
             this.game_started = false;
