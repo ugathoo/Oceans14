@@ -269,7 +269,7 @@ export class Oceans14 extends Scene {
         this.shapes.text.set_string("Welcome to", context.context);
         this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
         model_transform = model_transform.times(Mat4.translation(0.15, -3, 0));
-        this.shapes.text.set_string("Oceans 14!", context.context);
+        this.shapes.text.set_string("Oceans' 14!", context.context);
         this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
         model_transform = model_transform.times(Mat4.scale(0.8, 0.8, 1));
         model_transform = model_transform.times(Mat4.translation(1.8, -5.3, 0));
@@ -542,10 +542,11 @@ export class Oceans14 extends Scene {
             else
                 laser_rot = Math.sin(t / 2) + Math.PI/3.1;
             if (around === true && left === true) {
-                laser_rot = Math.sin(t / 2)/4 - Math.PI/13;
+                //laser_rot = Math.sin(t / 2)/4 - Math.PI/13;
+                laser_rot = Math.sin(t / 2) - Math.PI/3.1;
             }
             if (around === true && left === false) {
-                laser_rot = Math.sin(t / 2)/4 + Math.PI/13;
+                laser_rot = Math.sin(t / 2) + Math.PI/3.1;
             }
             if (around === true)
                 this.slow_angle = laser_rot;
