@@ -927,12 +927,19 @@ export class Oceans14 extends Scene {
 
         if (this.game_started) {
             model_transform = Mat4.identity();
-            this.win = this.check_coll_jewel();
 
-            if(this.medium === true ||this.hard === true){
-                this.lose = (this.check_coll_flash(t)) || (this.check_coll_rot_slow(this.slow_angle))|| (this.check_coll_rot_fast(this.fast_angle));
+            //set flags
+            if(this.win){
+                this.win = true;
+            }else if(this.lose){
+                this.lose = true;
             }else {
-                this.lose = (this.check_coll_flash(t)) || (this.check_coll_rot_slow(this.slow_angle));
+                this.win = this.check_coll_jewel();
+                if (this.medium === true || this.hard === true) {
+                    this.lose = (this.check_coll_flash(t)) || (this.check_coll_rot_slow(this.slow_angle)) || (this.check_coll_rot_fast(this.fast_angle));
+                } else {
+                    this.lose = (this.check_coll_flash(t)) || (this.check_coll_rot_slow(this.slow_angle));
+                }
             }
 
             if(this.win){
