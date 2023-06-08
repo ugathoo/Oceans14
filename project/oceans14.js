@@ -122,6 +122,7 @@ export class Oceans14 extends Scene {
         this.initial_camera_location = Mat4.identity();
         this.initial_camera_location = this.initial_camera_location.times(Mat4.translation(0, 0, -30));
         this.game_started = false;
+        this.game_ended = this.win || this.lose;
         this.medium = false;
         this.hard = false;
 
@@ -432,9 +433,51 @@ export class Oceans14 extends Scene {
 
     draw_drone(context, program_state, model_transform,droneX, droneY, t) {
         const pink = hex_color("#ed99f0");
-        let head_transform = model_transform.times(Mat4.translation(-17,10,0));//.times(Mat4.rotation(t, 0, 1, 0));
-        droneX = -17;
-        droneY = 10;
+        let head_transform = model_transform.times(Mat4.translation(-17,10,0)).times(Mat4.rotation(t, 0, 1, 0));
+        //droneX = -17;
+        //droneY = 10;
+
+        this.shapes.head.draw(context, program_state, head_transform, this.materials.test.override({color: pink}));
+        let leg_transform1 = head_transform.times(Mat4.scale(1.3, 0.2, 0.2)).times(Mat4.translation(1.25, 0, 0));
+        let leg_transform2 = head_transform.times(Mat4.scale(1.3, 0.2, 0.2)).times(Mat4.translation(-1.25, 0, 0));
+        this.shapes.leg.draw(context, program_state, leg_transform1, this.materials.test);
+        this.shapes.leg.draw(context, program_state, leg_transform2, this.materials.test);
+        let k1_transform = leg_transform1.times(Mat4.scale((1 / 1.3), (1 / 0.2), (1 / 0.2))).times(Mat4.scale(0.2, 0.2, 0.2)).times(Mat4.translation(5.25, 1.7, 0));
+        this.shapes.nut.draw(context, program_state, k1_transform, this.materials.test);
+        let b1_transform = leg_transform1.times(Mat4.scale((1 / 1.3), (1 / 0.2), (1 / 0.2))).times(Mat4.rotation(-90, 1, 1, 1))
+            .times(Mat4.scale(0.1, 0.6, 0.1)).times(Mat4.translation(0, 1.9, 3));
+        let b2_transform = leg_transform1.times(Mat4.scale((1 / 1.3), (1 / 0.2), (1 / 0.2))).times(Mat4.rotation(-180, 1, 1, 1))
+            .times(Mat4.scale(0.1, 0.6, 0.1)).times(Mat4.translation(3.3, 0.2, 10.5));
+        let b3_transform = leg_transform1.times(Mat4.scale((1 / 1.3), (1 / 0.2), (1 / 0.2))).times(Mat4.rotation(180, 1, 1, 1))
+            .times(Mat4.rotation(90, 0, 0, 1)).times(Mat4.rotation(-90, 0, 1, 0))
+            .times(Mat4.scale(0.1, 0.6, 0.1)).times(Mat4.translation(-0.5, -0.5, -10));
+        this.shapes.blade.draw(context, program_state, b1_transform, this.materials.test.override({color: pink}));
+        this.shapes.blade.draw(context, program_state, b2_transform, this.materials.test.override({color: pink}));
+        this.shapes.blade.draw(context, program_state, b3_transform, this.materials.test.override({color: pink}));
+        let k2_transform = leg_transform2.times(Mat4.scale((1 / 1.3), (1 / 0.2), (1 / 0.2))).times(Mat4.scale(0.2, 0.2, 0.2))
+            .times(Mat4.translation(-5.25, 1.7, 0));
+        this.shapes.nut.draw(context, program_state, k2_transform, this.materials.test);
+
+        let b4_transform = leg_transform2.times(Mat4.scale((1 / 1.3), (1 / 0.2), (1 / 0.2))).times(Mat4.rotation(90, 1, 1, 1))
+            .times(Mat4.rotation(200, 1, 0, 0))
+            .times(Mat4.scale(0.1, 0.6, 0.1)).times(Mat4.translation(2.1, 1.6, -4.2));
+
+        let b5_transform = leg_transform2.times(Mat4.scale((1 / 1.3), (1 / 0.2), (1 / 0.2))).times(Mat4.rotation(-180, 1, 1, 1))
+            .times(Mat4.rotation(-280, 1, 0, 0))
+            .times(Mat4.scale(0.1, 0.6, 0.1)).times(Mat4.translation(3.3, -0.5, 10.5));
+
+        let b6_transform = leg_transform2.times(Mat4.scale((1 / 1.3), (1 / 0.2), (1 / 0.2))).times(Mat4.rotation(180, 1, 1, 1))
+            .times(Mat4.rotation(90, 1, 1, 0)).times(Mat4.rotation(-45, 0, 0, 1))
+            .times(Mat4.scale(0.1, 0.6, 0.1)).times(Mat4.translation(-5, -1.1, 5.5));
+        this.shapes.blade.draw(context, program_state, b4_transform, this.materials.test.override({color: pink}));
+        this.shapes.blade.draw(context, program_state, b5_transform, this.materials.test.override({color: pink}));
+        this.shapes.blade.draw(context, program_state, b6_transform, this.materials.test.override({color: pink}));
+
+    }
+
+    draw_drone_no_rot(context, program_state, model_transform, droneX, droneY, t){
+        const pink = hex_color("#ed99f0");
+        let head_transform = model_transform.times(Mat4.translation(-17,10,0));
 
         this.shapes.head.draw(context, program_state, head_transform, this.materials.test.override({color: pink}));
         let leg_transform1 = head_transform.times(Mat4.scale(1.3, 0.2, 0.2)).times(Mat4.translation(1.25, 0, 0));
@@ -482,7 +525,6 @@ export class Oceans14 extends Scene {
         let gem2_transform = model_transform.times(Mat4.translation(0,-9.3,0)).times(Mat4.scale(0.5,0.5,0.5)).times(Mat4.rotation(t,0,1,0));
         this.shapes.gem_half2.draw(context,program_state,gem2_transform,this.materials.test.override({color:red}));
     }//.times(Mat4.rotation(-135,0,0,1))
-
 
 
     draw_laser(context, program_state, model_transform, t, rotating, around, location, left, tutorial) // make it so that laser can't go super high up
@@ -568,21 +610,29 @@ export class Oceans14 extends Scene {
             this.hard = true;
         });
         this.key_triggered_button("Move Up", ["w"], () => {
-            this.drone_model_transform = this.drone_model_transform.times(Mat4.translation(0, 1, 0));
-            console.log(this.drone_model_transform - Mat4.identity());
-            this.droneY += 1;
+            if(!this.game_ended) {
+                this.drone_model_transform = this.drone_model_transform.times(Mat4.translation(0, 1, 0));
+                console.log(this.drone_model_transform - Mat4.identity());
+                this.droneY += 1;
+            }
         });
         this.key_triggered_button("Move Left", ["a"], () => {
-            this.drone_model_transform = this.drone_model_transform.times(Mat4.translation(-1, 0, 0));
-            this.droneX -= 1;
+            if(!this.game_ended) {
+                this.drone_model_transform = this.drone_model_transform.times(Mat4.translation(-1, 0, 0));
+                this.droneX -= 1;
+            }
         });
         this.key_triggered_button("Move Right", ["d"], () => {
-            this.drone_model_transform = this.drone_model_transform.times(Mat4.translation(1, 0, 0));
-            this.droneX += 1;
+            if(!this.game_ended) {
+                this.drone_model_transform = this.drone_model_transform.times(Mat4.translation(1, 0, 0));
+                this.droneX += 1;
+            }
         });
         this.key_triggered_button("Move Down", ["s"], () => {
-            this.drone_model_transform = this.drone_model_transform.times(Mat4.translation(0, -1, 0));
-            this.droneY -= 1;
+            if(!this.game_ended) {
+                this.drone_model_transform = this.drone_model_transform.times(Mat4.translation(0, -1, 0));
+                this.droneY -= 1;
+            }
         });
         this.key_triggered_button("Start/End tutorial", ["t"], () => {
             this.tutorial = !this.tutorial;
@@ -716,8 +766,20 @@ export class Oceans14 extends Scene {
         else return ((Math.abs(dx - gx) <= 4.5) && (Math.abs(gy-dy) <= 1));
     }
 
-    win_box(context, program_state){
+    win_box(context, program_state, t){
         let model_transform = Mat4.identity();
+
+        model_transform = model_transform.times(Mat4.rotation(Math.PI/6, 0, 0, 1));
+        model_transform = model_transform.times(Mat4.scale(2, 2, 2));
+        model_transform = model_transform.times(Mat4.translation(12.25, -3.5, 0));
+        this.draw_drone_no_rot(context, program_state, model_transform, t);
+
+        model_transform = Mat4.identity();
+        model_transform = model_transform.times(Mat4.scale(3, 3, 3));
+        model_transform = model_transform.times(Mat4.translation(4, 7, 0));
+        this.draw_jewel(context,program_state,model_transform,t);
+
+        model_transform = Mat4.identity();
         // create box
         model_transform = model_transform.times(Mat4.scale(9, 9, 9));
         this.shapes.square.draw(context, program_state, model_transform, this.materials.tutorial_box);
@@ -748,8 +810,20 @@ export class Oceans14 extends Scene {
         this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
     }
 
-    lose_box(context, program_state){
+    lose_box(context, program_state,t){
         let model_transform = Mat4.identity();
+
+        model_transform = model_transform.times(Mat4.rotation(Math.PI/6, 0, 0, 1));
+        model_transform = model_transform.times(Mat4.scale(2, 2, 2));
+        model_transform = model_transform.times(Mat4.translation(13, -4.5, 0));
+        this.draw_drone_no_rot(context, program_state, model_transform, t);
+
+        model_transform = Mat4.identity();
+        model_transform = model_transform.times(Mat4.scale(3, 3, 3));
+        model_transform = model_transform.times(Mat4.translation(5, 7, 0));
+        this.draw_jewel(context,program_state,model_transform,t);
+
+        model_transform = Mat4.identity();
         // create box
         model_transform = model_transform.times(Mat4.scale(9, 9, 9));
         this.shapes.square.draw(context, program_state, model_transform, this.materials.tutorial_box);
@@ -818,7 +892,7 @@ export class Oceans14 extends Scene {
         model_transform = model_transform.times(Mat4.rotation(Math.PI/6, 0, 0, 1));
         model_transform = model_transform.times(Mat4.scale(2, 2, 2));
         model_transform = model_transform.times(Mat4.translation(13, -4.5, 0));
-        this.draw_drone(context, program_state, model_transform, t);
+        this.draw_drone_no_rot(context, program_state, model_transform, t);
 
         model_transform = Mat4.identity();
         model_transform = model_transform.times(Mat4.scale(3, 3, 3));
@@ -862,11 +936,11 @@ export class Oceans14 extends Scene {
             }
 
             if(this.win){
-                this.win_box(context,program_state);
+                this.win_box(context,program_state,t);
                 //this.shapes.cube.draw(context,program_state,model_transform,this.materials.test);
             }
             else if(this.lose){
-                this.lose_box(context,program_state);
+                this.lose_box(context,program_state,t);
                 //this.shapes.cube.draw(context,program_state,model_transform,this.materials.test.override({color: hex_color('#b734eb')}));
             }
             else {
