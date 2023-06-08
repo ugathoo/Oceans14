@@ -524,7 +524,8 @@ export class Oceans14 extends Scene {
             model_transform = model_transform.times(Mat4.translation(0, location, 0));
             model_transform = model_transform.times(Mat4.translation(translation_times*21.5, 0, 0));
             model_transform = model_transform.times(Mat4.translation(translation_times*-21.5, 0, 0));
-            if (Math.ceil(t) % 2 === 0 && tutorial === false)
+            //if (Math.ceil(t) % 2 === 0 && tutorial === false)
+            if (Math.ceil(t) % 2 === 0)
                 this.shapes.line.draw(context, program_state, model_transform, this.materials.laser, "LINES");
             model_transform = Mat4.identity();
 
@@ -907,8 +908,8 @@ export class Oceans14 extends Scene {
             this.draw_laser(context, program_state, model_transform, t, true, true, this.circle_laser_location, this.circle_laser_side, true);
             if (this.medium === true || this.hard === true)
                 this.draw_laser(context, program_state, model_transform, t, true, false, this.rot_laser_location, this.rot_laser_side, true);
-            if (this.hard === true)
-                this.draw_laser(context, program_state, model_transform, t, false, false, this.flash_laser_location, this.flash_laser_side, true);
+            // if (this.hard === true)
+            //     this.draw_laser(context, program_state, model_transform, t, false, false, this.flash_laser_location, this.flash_laser_side, true);
 
             model_transform = Mat4.identity();
             // add in tutorial steps!
