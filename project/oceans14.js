@@ -162,7 +162,7 @@ export class Oceans14 extends Scene {
         while (Math.abs(linear_combo - this.circle_laser_location) < 4. || Math.abs(linear_combo - this.rot_laser_location) < 4.)
         {
             random_amount = Math.random();
-            linear_combo = (0. * random_amount) + (8. * (1. - random_amount));
+            linear_combo = (0. * random_amount) + (7. * (1. - random_amount));
         }
         this.flash_laser_location = linear_combo;
 
@@ -269,7 +269,7 @@ export class Oceans14 extends Scene {
         this.shapes.text.set_string("Welcome to", context.context);
         this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
         model_transform = model_transform.times(Mat4.translation(0.15, -3, 0));
-        this.shapes.text.set_string("Oceans' 14!", context.context);
+        this.shapes.text.set_string("Ocean's 14!", context.context);
         this.shapes.text.draw(context, program_state, model_transform, this.materials.text_image);
         model_transform = model_transform.times(Mat4.scale(0.8, 0.8, 1));
         model_transform = model_transform.times(Mat4.translation(1.8, -5.3, 0));
@@ -568,7 +568,8 @@ export class Oceans14 extends Scene {
             model_transform = model_transform.times(Mat4.translation(translation_times*21.5, 0, 0));
             model_transform = model_transform.times(Mat4.translation(translation_times*-21.5, 0, 0));
             //if (Math.ceil(t) % 2 === 0 && tutorial === false)
-            if (Math.ceil(t) % 2 === 0)
+            //if (Math.ceil(t) % 2 === 0)
+            if (Math.ceil(t) % 4 <= 1)
                 this.shapes.line.draw(context, program_state, model_transform, this.materials.laser, "LINES");
             model_transform = Mat4.identity();
 
@@ -653,7 +654,7 @@ export class Oceans14 extends Scene {
     check_coll_flash(t){
         let dy = Math.abs(this.droneY);
         let  fly = this.flash_laser_location;
-        return (this.hard && (((Math.ceil(t) % 2 === 0) && ((Math.abs(dy - fly) < 1) || (Math.abs(fly - dy) < 1)))));
+        return (this.hard && (((Math.ceil(t) % 4 <= 1) && ((Math.abs(dy - fly) < 1) || (Math.abs(fly - dy) < 1)))));
     }
     check_coll_rot_slow(theta){
         let dy = this.droneY;
@@ -984,7 +985,7 @@ export class Oceans14 extends Scene {
             model_transform = Mat4.identity();
             this.draw_jewel(context,program_state,model_transform,t);
             //let drone_trans = model_transform;
-            this.draw_drone(context, program_state, this.drone_model_transform, t);
+            this.draw_drone_no_rot(context, program_state, this.drone_model_transform, t);
 
 
             model_transform = Mat4.identity();
